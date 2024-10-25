@@ -235,8 +235,8 @@ class Grid {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 120,
-                        y: y * 90
+                        x: x * 130,
+                        y: y * 100
                     }
                 }))
             }
