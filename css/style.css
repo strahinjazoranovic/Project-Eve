@@ -38,6 +38,10 @@ body {
     background-color: rgb(128, 0, 100)
 }
 
+#controls{
+    font-size: 25px;
+}
+
 #canvas{
     display: flex;
     justify-content: center;

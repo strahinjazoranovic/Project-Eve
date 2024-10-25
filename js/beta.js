@@ -255,10 +255,6 @@ class Grid {
     }
 }
 
-
-
-
-
 const player = new Player()
 const projectiles = []
 const grids = []
