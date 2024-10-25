@@ -17,17 +17,28 @@
     style="position: fixed; z-index: 10; color: white; left: 10px; top: 10px; margin: 0; font-size: 20px; font-family: monospace;">
     <span>Score:</span><span id="scoreEl">0</span>
     </p>
+
+    <p
+    style="position: fixed; z-index: 10; color: white; left: 200px; top: 10px; margin: 0; font-size: 20px; font-family: monospace;">
+    <span>High Score:</span><span id="scoreEl">0</span>
+    </p>
     
     <div id="title">
-        <h1 id="h5"><a href="inlog1.html">PROJECT EVE</a></h1>
+        <h1 id="h5"><a href="inlog1.html">PROJECT EVE</a></h1>   
     </div>
+
+    <label for="speedSlider">Invader Speed:</label>
+    <input type="range" id="speedSlider" min="1" max="10" value="2" step="0.1">
 
     <div id="canvas">
     <canvas></canvas>
     </div>
-    
-    
-    
+
+    <div id="playMenu">
+        <h1>Project Eve</h1>
+        <button id="playButton">Play</button>
+    </div>
+
 </body>
 <script src="js/beta.js"></script>
 </html>

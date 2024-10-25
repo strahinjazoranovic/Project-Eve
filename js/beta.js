@@ -1,12 +1,13 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const scoreEl = document.querySelector('#scoreEl')
+const speedSlider = document.getElementById('speedSlider')
+const playMenu = document.getElementById('playMenu')
+const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/audio1.mp3')
 
 canvas.width = 1024
 canvas.height = 576
-
-
 
 
 class Player {
@@ -205,7 +206,7 @@ class Invader {
                 },
                 velocity: {
                     x: 0,
-                    y: 2
+                    y: 3
                 }
             })
         )
@@ -221,7 +222,7 @@ class Grid {
         }
 
         this.velocity = {
-            x: 2,
+            x: 3,
             y: 0
         }
 
@@ -249,7 +250,7 @@ class Grid {
 
         if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
             this.velocity.x = -this.velocity.x;
-            this.velocity.y = 50;
+            this.velocity.y = 60;
         }
     }
 }
@@ -293,7 +294,7 @@ for (let i = 0; i <125; i++){
       
       velocity: {
           x: 0,
-          y: 0.4
+          y: 2
       },
       radius: Math.random() * 2,
       color: 'white'
@@ -391,7 +392,7 @@ function animate() {
     grids.forEach((grid, gridIndex) => {
         grid.update()
         //spawning projectiles
-        if (frames % 200 === 0 && grid.invaders.length > 0) {
+        if (frames % 150 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -449,10 +450,10 @@ function animate() {
     })
 
     if (keys.a.pressed && player.position.x >= 0) { // zodat spaceshuttle niet weggaat uit scherm als je a inhoudt
-        player.velocity.x = -5
+        player.velocity.x = -6
         player.rotation = -0.20
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {  // zodat spaceshuttle niet weggaat uit scherm als je d inhoudt
-        player.velocity.x = 5
+        player.velocity.x = 6
         player.rotation = 0.20
     } else {
         player.velocity.x = 0
@@ -471,7 +472,11 @@ function animate() {
     frames++
 }
 
-animate()
+playButton.addEventListener('click', () => {
+    playMenu.style.display = 'none'  // Hide the play menu
+    game.active = true  // Set game to active
+    animate()  // Start the game loop
+})
 
 addEventListener('keydown', ({ key }) => {
     if (game.over) return

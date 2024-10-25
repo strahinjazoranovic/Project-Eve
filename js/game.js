@@ -1,9 +1,13 @@
-
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-const score = document.querySelector('#scoreEl')
+const scoreEl = document.querySelector('#scoreEl')
+const speedSlider = document.getElementById('speedSlider')
+const playMenu = document.getElementById('playMenu')
+const playButton = document.getElementById('playButton')
+const muziek = new Audio('sounds/audio1.mp3')
 
-console.log(scoreEl)
+canvas.width = 1024
+canvas.height = 576
 
 
 class Player {
@@ -77,7 +81,7 @@ class Projectile {
         this.position = position
         this.velocity = velocity
 
-        this.radius = 3
+        this.radius = 5
     }
 
     draw() {
@@ -166,7 +170,7 @@ class Invader {
             this.height = image.height * scale
             this.position = {
                 x: position.x,
-                y: position.x
+                y: position.y
             }
         }
     }
@@ -185,11 +189,11 @@ class Invader {
         }
     }
 
-    update() {
+    update({ velocity }) {
         if (this.image) {
             this.draw()
-            this.position.x += this.velocity.x
-            this.position.y += this.velocity.y
+            this.position.x += velocity.x
+            this.position.y += velocity.y
         }
     }
 
@@ -218,7 +222,7 @@ class Grid {
         }
 
         this.velocity = {
-            x: 4,
+            x: 3,
             y: 0
         }
 
@@ -246,7 +250,7 @@ class Grid {
 
         if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
             this.velocity.x = -this.velocity.x;
-            this.velocity.y = 50;
+            this.velocity.y = 60;
         }
     }
 }
@@ -279,6 +283,8 @@ let game = {
     active: true
 }
 
+let score = 0
+
 for (let i = 0; i <125; i++){
     particles.push(new Particle({
       position:   {
@@ -288,7 +294,7 @@ for (let i = 0; i <125; i++){
       
       velocity: {
           x: 0,
-          y: 0.4
+          y: 2
       },
       radius: Math.random() * 2,
       color: 'white'
@@ -317,6 +323,7 @@ function createParticles({object, color, fades}) {
 function animate() {
     if (!game.active) return
     requestAnimationFrame(animate)
+    muziek.play();
     c.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
     particles.forEach((particle, i) => {
@@ -334,7 +341,7 @@ function animate() {
         }
     })
 
-    console.log(particles)
+
     invaderProjectiles.forEach((invaderProjectile, index) => {
         if (
             invaderProjectile.position.y + invaderProjectile.height >= canvas.height) {
@@ -385,7 +392,7 @@ function animate() {
     grids.forEach((grid, gridIndex) => {
         grid.update()
         //spawning projectiles
-        if (frames % 100 === 0 && grid.invaders.length > 0) {
+        if (frames % 150 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -414,6 +421,9 @@ function animate() {
 
                         // remove invader and projectile
                         if (invaderFound && projectileFound) {
+                            score += 100
+                            console.log(score)
+                            scoreEl.innerHTML = score
                             createParticles({
                                 object: invader,
                                 fades: true
@@ -462,7 +472,11 @@ function animate() {
     frames++
 }
 
-animate()
+playButton.addEventListener('click', () => {
+    playMenu.style.display = 'none'  // Hide the play menu
+    game.active = true  // Set game to active
+    animate()  // Start the game loop
+})
 
 addEventListener('keydown', ({ key }) => {
     if (game.over) return
@@ -484,7 +498,6 @@ addEventListener('keydown', ({ key }) => {
                     y: -8
                 }
             }))
-            console.log(projectiles)
             break
     }
 })
