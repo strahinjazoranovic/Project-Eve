@@ -222,7 +222,7 @@ class Grid {
         }
 
         this.velocity = {
-            x: 3,
+            x: 1,
             y: 0
         }
 
@@ -250,7 +250,7 @@ class Grid {
 
         if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
             this.velocity.x = -this.velocity.x;
-            this.velocity.y = 60;
+            this.velocity.y = 20;
         }
     }
 }
