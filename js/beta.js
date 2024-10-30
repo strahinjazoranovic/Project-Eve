@@ -6,8 +6,8 @@ const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/audio1.mp3')
 
-canvas.width = 1024
-canvas.height = 576
+canvas.width = 1228
+canvas.height = 691
 
 
 class Player {
@@ -388,7 +388,7 @@ function animate() {
     grids.forEach((grid, gridIndex) => {
         grid.update()
         //spawning projectiles
-        if (frames % 100 === 0 && grid.invaders.length > 0) {
+        if (frames % 250 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -459,7 +459,7 @@ function animate() {
     // spawning new enemies
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 100 + 100)
+        randomInterval = Math.floor(Math.random() * 400 + 200)
         frames = 0
         console.log(randomInterval)
     }

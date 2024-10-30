@@ -222,7 +222,7 @@ class Grid {
         }
 
         this.velocity = {
-            x: 3,
+            x: 1,
             y: 0
         }
 
@@ -250,7 +250,7 @@ class Grid {
 
         if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
             this.velocity.x = -this.velocity.x;
-            this.velocity.y = 60;
+            this.velocity.y = 20;
         }
     }
 }
@@ -388,7 +388,7 @@ function animate() {
     grids.forEach((grid, gridIndex) => {
         grid.update()
         //spawning projectiles
-        if (frames % 100 === 0 && grid.invaders.length > 0) {
+        if (frames % 250 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -459,7 +459,7 @@ function animate() {
     // spawning new enemies
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 100 + 100)
+        randomInterval = Math.floor(Math.random() * 400 + 200)
         frames = 0
         console.log(randomInterval)
     }
