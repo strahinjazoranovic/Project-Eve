@@ -6,8 +6,8 @@ const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/audio1.mp3')
 
-canvas.width = 1228
-canvas.height = 691
+canvas.width = 1024
+canvas.height = 576
 
 
 class Player {

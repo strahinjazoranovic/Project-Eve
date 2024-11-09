@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Functie om de naam weer te geven
         function displayText() {
             var name = localStorage.getItem('userName') || 'USER';
-            document.getElementById("hello").textContent = "WELCOME TO PROJECT EVE, " + name.toUpperCase();
+            document.getElementById("hello").textContent = "GOOD LUCK WITH THE MISSION, " + name.toUpperCase();
         }
 
         // Roep de displayText functie aan na 2,5 seconden
@@ -43,4 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 setTimeout(() => {
     const sometext = document.getElementById('hello');
+
+    sometext.style.display = 'none';
+
 }, 5500);

@@ -5,43 +5,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Eve</title>
-    <link rel="icon"
-        href="img/spaceshuttle.png"
-        type="image/icon type">
+    <link rel="icon" href="img/spaceshuttle.png" type="image/icon type">
     <link rel="stylesheet" href="css/style.css">
 
 </head>
 
-<body>  
-    <p
-    style="position: fixed; z-index: 10; color: white; left: 10px; top: 10px; margin: 0; font-size: 20px; font-family: monospace;">
-    <span>Score:</span><span id="scoreEl">0</span>
-    </p>
-
-    <p
-    style="position: fixed; z-index: 10; color: white; left: 200px; top: 10px; margin: 0; font-size: 20px; font-family: monospace;">
-    <span>High Score:</span><span id="scoreEl">0</span>
-    </p>
-    
+<body>
     <div id="title">
-        <h1 id="h5"><a href="inlog1.html">PROJECT EVE</a></h1>   
+        <h1 id="h5"><a href="inlog1.html">PROJECT EVE</a></h1>
     </div>
 
-    <label for="speedSlider">Invader Speed:</label>
-    <input type="range" id="speedSlider" min="1" max="10" value="2" step="0.1">
+
+    <div id="gamebuttons">
+        <p
+        style="position: fixed; z-index: 10; color: white; left: 50px; top: 15px; margin: 0; font-size: 20px; font-family: monospace;">
+        <span>Score:</span><span id="scoreEl">0</span>
+        </p>
+
+        <p
+        style="position: fixed; z-index: 10; color: white; left: 200px; top: 15px; margin: 0; font-size: 20px; font-family: monospace;">
+        <span>High Score:</span><span id="scoreEl">0</span>
+        </p>
+
+        <label for="speedSlider"
+        style="position: fixed; z-index: 10; color: white; left: 400px; top: 15px; margin: 0; font-size: 20px; font-family: monospace;">Enemy
+        Diffuculty:</label>
+
+        <input
+        style="position: fixed; z-index: 10; color: white; left: 590px; top: 20px; margin: 0; font-size: 20px; font-family: monospace;"
+        type="range" id="speedSlider" min="1" max="5" value="2" step="0.1">
+    </div>
+    
+
+    
+
+
 
     <div id="canvas">
-    <canvas></canvas>
+        <canvas></canvas>
     </div>
 
     <div id="playMenu">
         <h1>Project Eve</h1>
         <h1 id="controls"> A to move left<br> D to move right <br>
-        Space To Shoot!<br></h1>
+            Space To Shoot!<br></h1>
         <h1 id="controls">Ctrl+R To Restart Game!</h1>
         <button id="playButton">Play</button>
     </div>
 
 </body>
 <script src="js/beta.js"></script>
+
 </html>
