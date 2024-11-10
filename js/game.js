@@ -23,7 +23,7 @@ class Player {
         const image = new Image()
         image.src = './img/spaceshuttle.png'
         image.onload = () => {
-            const scale = 0.10
+            const scale = 0.08
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
@@ -164,7 +164,7 @@ class Invader {
         const image = new Image()
         image.src = './img/eindbaas.png'
         image.onload = () => {
-            const scale = 0.01
+            const scale = 0.20
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale

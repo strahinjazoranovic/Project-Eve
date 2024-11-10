@@ -23,7 +23,7 @@ class Player {
         const image = new Image()
         image.src = './img/spaceshuttle.png'
         image.onload = () => {
-            const scale = 0.10
+            const scale = 0.08
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
@@ -235,8 +235,8 @@ class Grid {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 130,
-                        y: y * 100
+                        x: x * 110,
+                        y: y * 70
                     }
                 }))
             }
