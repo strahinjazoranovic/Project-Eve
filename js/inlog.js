@@ -46,4 +46,4 @@ setTimeout(() => {
 
     sometext.style.display = 'none';
 
-}, 5500);
+}, 6500);
