@@ -224,7 +224,8 @@ a {
     color: white;
 }
 
-#skipbutton1 {
+/* Dit is de backbutton die je ziet in de tutorial */
+#backbutton{
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 30px;
@@ -234,4 +235,9 @@ a {
     border-radius: 5px;
     color: white;
     transition: background-color 0.3s;
+}
+
+/* Dit is voor wanneer je over de backbutton heen gaat */
+#backbutton:hover {
+    background-color: black;
 }
