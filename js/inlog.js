@@ -1,9 +1,9 @@
-// Functie om de naam op te slaan in localStorage en de gebruiker naar inlog1.html te sturen
+// Functie om de naam op te slaan in localStorage en de gebruiker naar home.html te sturen
 function saveName() {
     var name = document.getElementById('name').value;
     if (name) {
         localStorage.setItem('userName', name);
-        window.location.href = 'inlog1.html'; // Gaat naar de volgende pagina
+        window.location.href = 'home.html'; // Gaat naar de volgende pagina
     }
 }
 
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Als de gebruiker op de inlog1.html pagina is
+    // Als de gebruiker op de home.html pagina is
     var helloElement = document.getElementById('hello');
     if (helloElement) {
         // Verwijder "ACCESS GRANTED" na 2 seconden
