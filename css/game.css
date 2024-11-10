@@ -219,9 +219,10 @@ a {
     padding: 10px;
     font-family: monospace;
     margin-left: 20px;
-    background-color: black;
+    background-color: purple;
     border-style: none;
-    color: white;
+    color: black;
+    
 }
 
 /* Dit is de backbutton die je ziet in de tutorial */
