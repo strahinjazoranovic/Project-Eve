@@ -105,14 +105,16 @@ html {
     text-align: center;
     font-family: monospace;
     font-size: 80px;
+    margin: 0px;
 }
 
 /* Dit zijn de start knoppen die gebruikt worden om de game te starten*/
 #start {
     display: flex;
     justify-content: space-around;
-    margin: 75px;
-    margin-top: 150px;
+    margin: 70px;
+    margin-top: 110px;
+    margin-bottom: 10px;
 }
 
 /* hiermee maak je de site gebruikbaar op telefoon*/
