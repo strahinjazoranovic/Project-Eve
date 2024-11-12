@@ -23,7 +23,7 @@ class Player {
         const image = new Image()
         image.src = './img/spaceshuttle.png'
         image.onload = () => {
-            const scale = 0.09
+            const scale = 0.10
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
@@ -467,6 +467,10 @@ function animate() {
         randomInterval = Math.floor(Math.random() * 400 + 200)
         frames = 0
         console.log(randomInterval)
+    }
+
+    if (game.over === true) {
+        document.getElementById('restartMenu').style.display = 'block';
     }
 
 
