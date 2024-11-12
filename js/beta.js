@@ -4,7 +4,7 @@ const scoreEl = document.querySelector('#scoreEl')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/audio1.mp3')
+const muziek = new Audio('sounds/audio2.mp3')
 
 canvas.width = 1500
 canvas.height = 750
@@ -240,7 +240,7 @@ class Grid {
                 this.invaders.push(new Invader({
                     position: {
                         x: x * 120,
-                        y: y * 10
+                        y: y * 110
                     }
                 }))
             }
@@ -515,46 +515,4 @@ addEventListener('keyup', ({ key }) => {
     }
 })
 
-// Check for Caps Lock during keypresses
-addEventListener('keydown', (event) => {
-    // Check if Caps Lock is on
-    if (event.getModifierState('CapsLock')) {
-        alert('Caps Lock is ON');
-    }
-});
-
-addEventListener('keyup', (event) => {
-    // Check again on key up to handle the case when Caps Lock is turned off
-    if (!event.getModifierState('CapsLock')) {
-        console.log('Caps Lock is OFF');
-    }
-});
-
-// Create a caps lock warning element
-const capsLockWarning = document.createElement('div');
-capsLockWarning.innerText = 'Caps Lock is ON';
-capsLockWarning.style.position = 'fixed';
-capsLockWarning.style.borderRadius = '10px'
-capsLockWarning.style.top = '10px';
-capsLockWarning.style.right = '10px';
-capsLockWarning.style.padding = '10px';
-capsLockWarning.style.backgroundColor = 'orange';
-capsLockWarning.style.color = 'black';
-capsLockWarning.style.display = 'none';  // Hidden by default
-document.body.appendChild(capsLockWarning);
-
-// Check for Caps Lock during keypresses
-addEventListener('keydown', (event) => {
-    if (event.getModifierState('CapsLock')) {
-        capsLockWarning.style.display = 'block';  // Show the warning
-    } else {
-        capsLockWarning.style.display = 'none';   // Hide the warning
-    }
-});
-
-addEventListener('keyup', (event) => {
-    if (!event.getModifierState('CapsLock')) {
-        capsLockWarning.style.display = 'none';  // Hide warning when Caps Lock is off
-    }
-});
 
