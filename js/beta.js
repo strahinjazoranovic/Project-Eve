@@ -9,7 +9,7 @@ const muziek = new Audio('sounds/audio1.mp3')
 canvas.width = 1024
 canvas.height = 576
 
-
+// Hier wordt de speler die jij bestuurt gespawnt 
 class Player {
     constructor() {
         this.velocity = {
@@ -76,6 +76,7 @@ class Player {
     }
 }
 
+// Hier worden de Projectiles gespawnt die over het scherm vliegen als je schiet
 class Projectile {
     constructor({ position, velocity }) {
         this.position = position
@@ -100,8 +101,9 @@ class Projectile {
     }
 }
 
+
 class Particle {
-    constructor({ position, velocity, radius, color, fades}) {
+    constructor({ position, velocity, radius, color, fades }) {
         this.position = position
         this.velocity = velocity
         this.radius = radius
@@ -126,10 +128,11 @@ class Particle {
         this.draw()
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
-        
+
         if (this.fades) this.opacity -= 0.01
     }
 }
+
 
 class InvaderProjectile {
     constructor({ position, velocity }) {
@@ -153,6 +156,7 @@ class InvaderProjectile {
     }
 }
 
+// Dit zijn de enemies
 class Invader {
     constructor({ position }) {
         this.velocity = {
@@ -213,7 +217,7 @@ class Invader {
     }
 }
 
-
+//Dit zijn de enemies die worden gespawned in grids
 class Grid {
     constructor() {
         this.position = {
@@ -236,7 +240,7 @@ class Grid {
                 this.invaders.push(new Invader({
                     position: {
                         x: x * 110,
-                        y: y * 70
+                        y: y * 100
                     }
                 }))
             }
@@ -281,39 +285,40 @@ let game = {
 
 let score = 0
 
-for (let i = 0; i <125; i++){
+// Hier worden de starts aangemaakt die je over het scherm ziet vliegen
+for (let i = 0; i < 125; i++) {
     particles.push(new Particle({
-      position:   {
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-      },
-      
-      velocity: {
-          x: 0,
-          y: 2
-      },
-      radius: Math.random() * 2,
-      color: 'white'
+        position: {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+        },
+
+        velocity: {
+            x: 0,
+            y: 2.5
+        },
+        radius: Math.random() * 2,
+        color: 'white'
     }))
 }
 
-function createParticles({object, color, fades}) {
-    for (let i = 0; i <15; i++){
+function createParticles({ object, color, fades }) {
+    for (let i = 0; i < 15; i++) {
         particles.push(new Particle({
-          position:   {
-              x: object.position.x + object.width / 2,
-              y: object.position.y + object.height / 2
-          },
-          
-          velocity: {
-              x: (Math.random() -0.5)* 2,
-              y: (Math.random() -0.5)* 2
-          },
-          radius: Math.random() * 3,
-          color: color || 'purple',
-          fades
+            position: {
+                x: object.position.x + object.width / 2,
+                y: object.position.y + object.height / 2
+            },
+
+            velocity: {
+                x: (Math.random() - 0.5) * 2,
+                y: (Math.random() - 0.5) * 2
+            },
+            radius: Math.random() * 3,
+            color: color || 'purple',
+            fades
         }))
-      }
+    }
 }
 
 function animate() {
@@ -324,11 +329,11 @@ function animate() {
     player.update()
     particles.forEach((particle, i) => {
 
-        if (particle.position.y - particle.radius >= canvas.height){
+        if (particle.position.y - particle.radius >= canvas.height) {
             particle.position.x = Math.random() * canvas.width
             particle.position.y = -particle.radius
         }
-        if (particle.opacity<= 0){
+        if (particle.opacity <= 0) {
             setTimeout(() => {
                 particles.splice(i, 1)
             }, 0);
@@ -356,7 +361,7 @@ function animate() {
 
             console.log('you lose')
             setTimeout(() => {
-                invaderProjectiles.splice(index,1 )
+                invaderProjectiles.splice(index, 1)
                 player.opacity = 0
                 game.over = true
             }, 0)
@@ -405,7 +410,7 @@ function animate() {
                     projectile.position.y + projectile.radius >= invader.position.y
                 ) {
 
-                    
+
 
                     setTimeout(() => {
                         const invaderFound = grid.invaders.find((invader2
@@ -432,7 +437,7 @@ function animate() {
                                 const lastInvader = grid.invaders[grid.invaders.length - 1]
 
                                 grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x
-                             grid.position.x = firstInvader.position.x 
+                                grid.position.x = firstInvader.position.x
                             } else {
                                 grids.splice(gridIndex, 1)
                             }
@@ -456,7 +461,7 @@ function animate() {
         player.rotation = 0
     }
 
-    // spawning new enemies
+    // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
         randomInterval = Math.floor(Math.random() * 400 + 200)
@@ -474,6 +479,7 @@ playButton.addEventListener('click', () => {
     animate()  // Start the game loop
 })
 
+// Hier zijn de controls gecodeerd
 addEventListener('keydown', ({ key }) => {
     if (game.over) return
     switch (key) {
