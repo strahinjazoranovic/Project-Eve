@@ -4,7 +4,7 @@ const scoreEl = document.querySelector('#scoreEl')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/audio2.mp3')
+const muziek = new Audio('sounds/audio3.mp3')
 
 canvas.width = 1500
 canvas.height = 750
