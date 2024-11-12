@@ -4,9 +4,9 @@ const scoreEl = document.querySelector('#scoreEl')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/beat1.mp3')
-const hitmarker = new Audio('sounds/hitmarker.mp3')
-const lost = new Audio('sounds/.mp3')
+const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
+const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
+const lost = new Audio('sounds/.mp3') // dit is voor de sound die je hoort wanneer je dood gaat
 
 canvas.width = 1500
 canvas.height = 750
@@ -330,6 +330,12 @@ function animate() {
     if (!game.active) return
     requestAnimationFrame(animate)
     muziek.play();
+    // Als de game over is dan krijg je de restart menu te zien
+    if (game.over === true) {
+        document.getElementById('restartMenu').style.display = 'flex';
+        muziek.pause();
+        lost.play();
+    }
     c.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
     particles.forEach((particle, i) => {
@@ -472,13 +478,7 @@ function animate() {
         frames = 0
     }
 
-    // Als de game over is dan krijg je de restart menu te zien
-    if (game.over === true) {
-        document.getElementById('restartMenu').style.display = 'flex';
-        muziek.pause();
-        lost.play();
-    }
-
+    
     frames++
 }
 
