@@ -236,7 +236,7 @@ class Grid {
                 this.invaders.push(new Invader({
                     position: {
                         x: x * 110,
-                        y: y * 70
+                        y: y * 100
                     }
                 }))
             }
@@ -290,7 +290,7 @@ for (let i = 0; i <125; i++){
       
       velocity: {
           x: 0,
-          y: 2
+          y: 2.5
       },
       radius: Math.random() * 2,
       color: 'white'
