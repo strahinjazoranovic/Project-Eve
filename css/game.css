@@ -189,13 +189,14 @@ a {
 /* Dit is de bovenste deel van de pagina waar Project Eve staat op de game pagina*/
 #h5 {
     color: purple;
-    text-align: center;
+    text-align: right;
     font-family: monospace;
     border: 4px solid #00FFFF;
     border-radius: 5px;
     font-size: 60px;
     margin-top: -15px;
     margin-bottom: 0px;
+    
 }
 
 /* Dit is de slider voor hoe snel de enemies bewegen, schieten en opnieuw spawnen */

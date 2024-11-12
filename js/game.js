@@ -23,13 +23,13 @@ class Player {
         const image = new Image()
         image.src = './img/spaceshuttle.png'
         image.onload = () => {
-            const scale = 0.08
+            const scale = 0.09
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
             this.position = {
-                x: canvas.width / 2 - this.width / 2,
-                y: canvas.height - this.height - 20
+                x: canvas.clientWidth / 2 - this.width / 2,
+                y: canvas.clientHeight - this.height - 20
             }
         }
     }
@@ -168,7 +168,7 @@ class Invader {
         const image = new Image()
         image.src = './img/eindbaas.png'
         image.onload = () => {
-            const scale = 0.20
+            const scale = 0.22
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
@@ -239,8 +239,8 @@ class Grid {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 110,
-                        y: y * 100
+                        x: x * 120,
+                        y: y * 110
                     }
                 }))
             }
@@ -557,3 +557,4 @@ addEventListener('keyup', (event) => {
         capsLockWarning.style.display = 'none';  // Hide warning when Caps Lock is off
     }
 });
+
