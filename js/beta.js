@@ -4,7 +4,9 @@ const scoreEl = document.querySelector('#scoreEl')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/audio3.mp3')
+const muziek = new Audio('sounds/beat1.mp3')
+const hitmarker = new Audio('sounds/hitmarker.mp3')
+const lost = new Audio('sounds/.mp3')
 
 canvas.width = 1500
 canvas.height = 750
@@ -76,7 +78,7 @@ class Player {
     }
 }
 
-// Hier worden de Projectiles gespawnt die over het scherm vliegen als je schiet
+// Hier worden de Projectiles gespawnt die jij over het scherm heen schiet
 class Projectile {
     constructor({ position, velocity }) {
         this.position = position
@@ -102,6 +104,7 @@ class Projectile {
 }
 
 
+// Dit is de Particles die jij ziet wanneer jij dood gaat
 class Particle {
     constructor({ position, velocity, radius, color, fades }) {
         this.position = position
@@ -133,7 +136,7 @@ class Particle {
     }
 }
 
-
+// Dit zijn de Projectiles die de enemies schieten
 class InvaderProjectile {
     constructor({ position, velocity }) {
         this.position = position
@@ -144,7 +147,7 @@ class InvaderProjectile {
     }
 
     draw() {
-        c.fillStyle = 'white'
+        c.fillStyle = 'purple'
         c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     }
@@ -245,7 +248,6 @@ class Grid {
                 }))
             }
         }
-        console.log(this.invaders)
     }
     update() {
         this.position.x += this.velocity.x;
@@ -284,6 +286,8 @@ let game = {
 }
 
 let score = 0
+let highScore = localStorage.getItem("highScore") || 0;
+
 
 // Hier worden de starts aangemaakt die je over het scherm ziet vliegen
 for (let i = 0; i < 125; i++) {
@@ -297,11 +301,12 @@ for (let i = 0; i < 125; i++) {
             x: 0,
             y: 2.5
         },
-        radius: Math.random() * 2,
+        radius: Math.random() * 2.5,
         color: 'white'
     }))
 }
 
+// Dit zijn de particles die jij ziet wanneer de enemies geschoten worden
 function createParticles({ object, color, fades }) {
     for (let i = 0; i < 15; i++) {
         particles.push(new Particle({
@@ -314,7 +319,7 @@ function createParticles({ object, color, fades }) {
                 x: (Math.random() - 0.5) * 2,
                 y: (Math.random() - 0.5) * 2
             },
-            radius: Math.random() * 3,
+            radius: Math.random() * 6,
             color: color || 'purple',
             fades
         }))
@@ -359,7 +364,6 @@ function animate() {
             >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width) {
 
-            console.log('you lose')
             setTimeout(() => {
                 invaderProjectiles.splice(index, 1)
                 player.opacity = 0
@@ -422,8 +426,8 @@ function animate() {
 
                         // remove invader and projectile
                         if (invaderFound && projectileFound) {
+                            hitmarker.play();
                             score += 100
-                            console.log(score)
                             scoreEl.innerHTML = score
                             createParticles({
                                 object: invader,
@@ -466,17 +470,19 @@ function animate() {
         grids.push(new Grid())
         randomInterval = Math.floor(Math.random() * 400 + 200)
         frames = 0
-        console.log(randomInterval)
     }
 
+    // Als de game over is dan krijg je de restart menu te zien
     if (game.over === true) {
-        document.getElementById('restartMenu').style.display = 'block';
+        document.getElementById('restartMenu').style.display = 'flex';
+        muziek.pause();
+        lost.play();
     }
-
 
     frames++
 }
 
+// Als je op play klikt dan start te game
 playButton.addEventListener('click', () => {
     playMenu.style.display = 'none'  // Hide the play menu
     game.active = true  // Set game to active

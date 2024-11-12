@@ -44,6 +44,42 @@ html {
     background-color: black
 }
 
+/* Dit is voor de menu die je ziet wanneer je afgaat in de game*/
+#restartMenu{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 38px;
+    font-family: monospace;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+/* Dit is voor de knop die je ziet als je afgaat*/
+#restartButton{
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 30px;
+    cursor: pointer;
+    background-color: purple;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+/* dit is voor de restartbutton knop wanneer je erover heen gaat*/
+#restartButton:hover{
+    background-color: black;
+}
+
 /* dit is voor tekst bij de tutorial*/
 #controls {
     font-size: 25px;
@@ -196,7 +232,6 @@ a {
     font-size: 60px;
     margin-top: -15px;
     margin-bottom: 0px;
-
     
 }
 
