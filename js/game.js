@@ -6,6 +6,7 @@ const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
 const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
+const lost = new Audio('soudns/.mp3')//Dit is het geluid dat je hoort als je dood gaat
 
 canvas.width = 1024
 canvas.height = 576
@@ -228,21 +229,21 @@ class Grid {
         }
 
         this.velocity = {
-            x: 1,
+            x: 3,
             y: 0
         }
 
         this.invaders = []
 
-        const columns = Math.floor(Math.random() * 6 + 2)
+        const columns = Math.floor(Math.random() * 4 + 2)
         const rows = Math.floor(Math.random() * 2 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 120,
-                        y: y * 110
+                        x: x * 110,
+                        y: y * 100
                     }
                 }))
             }

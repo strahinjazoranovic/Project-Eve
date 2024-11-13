@@ -6,7 +6,6 @@ const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
 const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
-const lost = new Audio('sounds/.mp3') // dit is voor de sound die je hoort wanneer je dood gaat
 
 canvas.width = 1500
 canvas.height = 750
@@ -229,21 +228,21 @@ class Grid {
         }
 
         this.velocity = {
-            x: 1,
+            x: 3,
             y: 0
         }
 
         this.invaders = []
 
-        const columns = Math.floor(Math.random() * 6 + 2)
+        const columns = Math.floor(Math.random() * 6 + 1)
         const rows = Math.floor(Math.random() * 2 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 120,
-                        y: y * 110
+                        x: x * 110,
+                        y: y * 100
                     }
                 }))
             }
@@ -460,7 +459,7 @@ function animate() {
     })
 
     if (keys.a.pressed && player.position.x >= 0) { // zodat spaceshuttle niet weggaat uit scherm als je a inhoudt
-        player.velocity.x = -6
+        player.velocity.x = -6 
         player.rotation = -0.20
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {  // zodat spaceshuttle niet weggaat uit scherm als je d inhoudt
         player.velocity.x = 6

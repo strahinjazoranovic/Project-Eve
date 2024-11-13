@@ -1,11 +1,18 @@
 body {
     margin: 0px;
     background-color: black;
+    animation-name: fadein;
+    animation-duration: 6s;
 }
 
 html {
     height: 400px;
     background-color: black;
+}
+
+@keyframes fadein { /* dit zijn de animations die je ziet op de home pagina */
+    from {opacity: 0;}
+    to {opacity: 1;}
 }
 
 /* Play menu styling */
@@ -197,10 +204,18 @@ html {
     padding: 50px;
 }
 
+.knop1:hover{
+    background-color: #00FFFF;
+}
+
 /* dit is voor alle link*/
 a {
     text-decoration: none;
     color: purple;
+}
+
+a:hover {
+    opacity: 0.6;
 }
 
 /* Dit is de titel div voor de Project Eve bovenin*/
