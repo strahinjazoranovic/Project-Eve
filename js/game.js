@@ -7,7 +7,6 @@ const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
 const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
 
-
 canvas.width = 1024
 canvas.height = 576
 
@@ -141,13 +140,13 @@ class InvaderProjectile {
     constructor({ position, velocity }) {
         this.position = position
         this.velocity = velocity
-        this.width = 5
+        this.width = 10
         this.height = 20
 
     }
 
     draw() {
-        c.fillStyle = 'purple'
+        c.fillStyle = 'white'
         c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     }
@@ -213,7 +212,7 @@ class Invader {
                 },
                 velocity: {
                     x: 0,
-                    y: 3
+                    y: 3.5
                 }
             })
         )
@@ -235,8 +234,8 @@ class Grid {
 
         this.invaders = []
 
-        const columns = Math.floor(Math.random() * 5 + 2)
-        const rows = Math.floor(Math.random() * 2 + 1)
+        const columns = Math.floor(Math.random() * 6 + 2)
+        const rows = Math.floor(Math.random() * 2 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
             for (let y = 0; y < rows; y++) {
@@ -330,6 +329,12 @@ function animate() {
     if (!game.active) return
     requestAnimationFrame(animate)
     muziek.play();
+    // Als de game over is dan krijg je de restart menu te zien
+    if (game.over === true) {
+        document.getElementById('restartMenu').style.display = 'flex';
+        muziek.pause();
+        lost.play();
+    }
     c.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
     particles.forEach((particle, i) => {
@@ -391,12 +396,11 @@ function animate() {
         } else {
             projectile.update()
         }
-
     })
 
     grids.forEach((grid, gridIndex) => {
         grid.update()
-        //spawning projectiles
+        //spawning enemy grids
         if (frames % 250 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
@@ -468,17 +472,11 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 400 + 200)
+        randomInterval = Math.floor(Math.random() * 300 + 150)
         frames = 0
     }
 
-    // Als de game over is dan krijg je de restart menu te zien
-    if (game.over === true) {
-        document.getElementById('restartMenu').style.display = 'flex';
-        muziek.pause();
-        lost.play();
-    }
-
+    
     frames++
 }
 
