@@ -2,7 +2,7 @@ body {
     margin: 0px;
     background-color: black;
     animation-name: fadein;
-    animation-duration: 6s;
+    animation-duration: 4s;
 }
 
 html {

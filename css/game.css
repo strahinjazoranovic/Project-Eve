@@ -2,7 +2,7 @@ body {
     margin: 0px;
     background-color: black;
     animation-name: fadein;
-    animation-duration: 6s;
+    animation-duration: 4s;
 }
 
 html {
@@ -11,7 +11,7 @@ html {
 }
 
 @keyframes fadein { /* dit zijn de animations die je ziet op de home pagina */
-    from {opacity: 0;}
+    from {opacity: 0.1;}
     to {opacity: 1;}
 }
 
