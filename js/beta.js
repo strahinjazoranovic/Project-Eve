@@ -5,7 +5,8 @@ const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
-const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
+const shoot = new Audio('sounds/.mp3') //dit is voor de shoot sound die je hoort als je schiet
+const lost = new Audio('sounds/.mp3')//Dit is het geluid dat je hoort als je dood gaat
 
 canvas.width = 1500
 canvas.height = 750
@@ -19,7 +20,7 @@ class Player {
         }
 
         this.rotation
-        this.opacity = 1
+        this.opacity = 1;
 
         const image = new Image()
         image.src = './img/spaceshuttle.png'
@@ -166,6 +167,8 @@ class Invader {
             y: 0
         }
 
+        this.health = 2; // dit is de health van de enemies
+
 
         const image = new Image()
         image.src = './img/eindbaas.png'
@@ -241,8 +244,8 @@ class Grid {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 110,
-                        y: y * 100
+                        x: x * 115,
+                        y: y * 105
                     }
                 }))
             }
@@ -369,20 +372,20 @@ function animate() {
             >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width) {
 
-            setTimeout(() => {
-                invaderProjectiles.splice(index, 1)
-                player.opacity = 0
-                game.over = true
-            }, 0)
-
-            setTimeout(() => {
-                game.active = false
-            }, 1000)
-            createParticles({
-                object: player,
-                color: 'white',
-                fades: true
-            })
+                setTimeout(() => {
+                    invaderProjectiles.splice(index, 1)
+                    player.opacity = 0
+                    game.over = true
+                }, 0)
+    
+                setTimeout(() => {
+                    game.active = false
+                }, 1000)
+                createParticles({
+                    object: player,
+                    color: 'white',
+                    fades: true
+                })
         }
     })
 
@@ -421,37 +424,40 @@ function animate() {
 
 
                     setTimeout(() => {
-                        const invaderFound = grid.invaders.find((invader2
-                        ) => invader2 === invader
-                        )
-
+                        const invaderFound = grid.invaders.find((invader2) => invader2 === invader);
                         const projectileFound = projectiles.find(
-                            projectile2 => projectile2 === projectile)
-
-                        // remove invader and projectile
+                            projectile2 => projectile2 === projectile
+                        );
+                    
                         if (invaderFound && projectileFound) {
-                            hitmarker.play();
-                            score += 100
-                            scoreEl.innerHTML = score
-                            createParticles({
-                                object: invader,
-                                fades: true
-                            })
-                            grid.invaders.splice(i, 1)
-                            projectiles.splice(j, 1)
+                            invader.health--; // Decrease invader's health
+                            
 
-                            if (grid.invaders.length > 0) {
-                                const firstInvader = grid.invaders[0]
-                                const lastInvader = grid.invaders[grid.invaders.length - 1]
-
-                                grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x
-                                grid.position.x = firstInvader.position.x
-                            } else {
-                                grids.splice(gridIndex, 1)
+                            if (invader.health <= 0) { // Only remove invader if health is 0
+                                score += 100;
+                                scoreEl.innerHTML = score;
+                    
+                                createParticles({
+                                    object: invader,
+                                    fades: true
+                                });
+                    
+                                grid.invaders.splice(i, 1);
                             }
-
+                    
+                            projectiles.splice(j, 1); // Remove the projectile
+                    
+                            if (grid.invaders.length > 0) {
+                                const firstInvader = grid.invaders[0];
+                                const lastInvader = grid.invaders[grid.invaders.length - 1];
+                    
+                                grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x;
+                                grid.position.x = firstInvader.position.x;
+                            } else {
+                                grids.splice(gridIndex, 1); // Remove grid if no invaders are left
+                            }
                         }
-                    })
+                    }, 0);
                 }
             })
 
@@ -498,6 +504,7 @@ addEventListener('keydown', ({ key }) => {
             keys.d.pressed = true
             break
         case ' ':
+            shoot.play()
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,

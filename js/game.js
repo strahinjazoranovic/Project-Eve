@@ -4,9 +4,9 @@ const scoreEl = document.querySelector('#scoreEl')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
+const muziek = new Audio('sounds/beat.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
 const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
-const lost = new Audio('soudns/.mp3')//Dit is het geluid dat je hoort als je dood gaat
+
 
 canvas.width = 1024
 canvas.height = 576
@@ -242,8 +242,8 @@ class Grid {
             for (let y = 0; y < rows; y++) {
                 this.invaders.push(new Invader({
                     position: {
-                        x: x * 110,
-                        y: y * 100
+                        x: x * 115,
+                        y: y * 105
                     }
                 }))
             }
