@@ -1,6 +1,7 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const scoreEl = document.querySelector('#scoreEl')
+const healthEL = document.querySelector('#healthEL')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
@@ -21,6 +22,7 @@ class Player {
 
         this.rotation
         this.opacity = 1;
+        this.health = 4; // Dit is de health van de speler
 
         const image = new Image()
         image.src = './img/spaceshuttle.png'
@@ -279,7 +281,7 @@ const keys = {
         pressed: false
     }
 }
-
+ 
 let frames = 0
 let randomInterval = Math.floor(Math.random() * 500 + 500)
 let game = {
@@ -288,8 +290,7 @@ let game = {
 }
 
 let score = 0
-let highScore = localStorage.getItem("highScore") || 0;
-
+let highScore = localStorage.getItem("highScore") || 0; 
 
 // Hier worden de starts aangemaakt die je over het scherm ziet vliegen
 for (let i = 0; i < 125; i++) {
@@ -336,7 +337,6 @@ function animate() {
     if (game.over === true) {
         document.getElementById('restartMenu').style.display = 'flex';
         muziek.pause();
-        lost.play();
     }
     c.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
@@ -372,20 +372,25 @@ function animate() {
             >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width) {
 
-                setTimeout(() => {
-                    invaderProjectiles.splice(index, 1)
-                    player.opacity = 0
-                    game.over = true
-                }, 0)
-    
-                setTimeout(() => {
-                    game.active = false
-                }, 1000)
-                createParticles({
-                    object: player,
-                    color: 'white',
-                    fades: true
-                })
+                if (invaderProjectiles[index]) {
+                    invaderProjectiles.splice(index, 1);
+                    player.health--; 
+                    createParticles({
+                        object: player,
+                        color: 'white',
+                        fades: true
+                    });
+                
+                    if (player.health <= 0) {
+                        player.opacity = 0;
+                        game.over = true; 
+                        createParticles({
+                            object: player,
+                            color: 'white',
+                            fades: true
+                        });
+                    }
+                }
         }
     })
 
@@ -403,8 +408,7 @@ function animate() {
 
     grids.forEach((grid, gridIndex) => {
         grid.update()
-        //spawning enemy grids
-        if (frames % 250 === 0 && grid.invaders.length > 0) {
+        if (frames % 400 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -431,12 +435,15 @@ function animate() {
                     
                         if (invaderFound && projectileFound) {
                             invader.health--; // Decrease invader's health
+                            createParticles({
+                                object: invader,
+                                fades: true
+                            });
                             
 
                             if (invader.health <= 0) { // Only remove invader if health is 0
                                 score += 100;
                                 scoreEl.innerHTML = score;
-                    
                                 createParticles({
                                     object: invader,
                                     fades: true
@@ -478,7 +485,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 300 + 150)
+        randomInterval = Math.floor(Math.random() * 400 + 200)
         frames = 0
     }
 
