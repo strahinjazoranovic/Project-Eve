@@ -25,7 +25,7 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     color: white;
     font-size: 38px;
     font-family: monospace;
@@ -61,12 +61,14 @@ html {
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0);
     color: white;
     font-size: 38px;
     font-family: monospace;
     flex-direction: column;
     z-index: 1000;
+    animation-name: fadein;
+    animation-duration: 2s;
 }
 
 /* Dit is voor de knop die je ziet als je afgaat*/

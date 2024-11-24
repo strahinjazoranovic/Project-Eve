@@ -1,11 +1,11 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const scoreEl = document.querySelector('#scoreEl')
+const healthEL = document.querySelector('#healthEL')
 const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/beat.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
-const hitmarker = new Audio('sounds/hitmarker.mp3') //dit is voor de hitmarker sound die je hoort als je enemies dood maakt
+const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
 
 
 canvas.width = 1024
@@ -20,7 +20,8 @@ class Player {
         }
 
         this.rotation
-        this.opacity = 1
+        this.opacity = 1;
+        this.health = 4; // Dit is de health van de speler
 
         const image = new Image()
         image.src = './img/spaceshuttle.png'
@@ -167,6 +168,8 @@ class Invader {
             y: 0
         }
 
+        this.health = 2; // dit is de health van de enemies
+
 
         const image = new Image()
         image.src = './img/eindbaas.png'
@@ -229,13 +232,13 @@ class Grid {
         }
 
         this.velocity = {
-            x: 3,
+            x: 2.8,
             y: 0
         }
 
         this.invaders = []
 
-        const columns = Math.floor(Math.random() * 4 + 2)
+        const columns = Math.floor(Math.random() * 6 + 1)
         const rows = Math.floor(Math.random() * 2 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
@@ -277,7 +280,7 @@ const keys = {
         pressed: false
     }
 }
-
+ 
 let frames = 0
 let randomInterval = Math.floor(Math.random() * 500 + 500)
 let game = {
@@ -286,8 +289,7 @@ let game = {
 }
 
 let score = 0
-let highScore = localStorage.getItem("highScore") || 0;
-
+let highScore = localStorage.getItem("highScore") || 0; 
 
 // Hier worden de starts aangemaakt die je over het scherm ziet vliegen
 for (let i = 0; i < 125; i++) {
@@ -334,7 +336,6 @@ function animate() {
     if (game.over === true) {
         document.getElementById('restartMenu').style.display = 'flex';
         muziek.pause();
-        lost.play();
     }
     c.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
@@ -370,20 +371,25 @@ function animate() {
             >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width) {
 
-            setTimeout(() => {
-                invaderProjectiles.splice(index, 1)
-                player.opacity = 0
-                game.over = true
-            }, 0)
-
-            setTimeout(() => {
-                game.active = false
-            }, 1000)
-            createParticles({
-                object: player,
-                color: 'white',
-                fades: true
-            })
+                if (invaderProjectiles[index]) {
+                    invaderProjectiles.splice(index, 1);
+                    player.health--; 
+                    createParticles({
+                        object: player,
+                        color: 'white',
+                        fades: true
+                    });
+                
+                    if (player.health <= 0) {
+                        player.opacity = 0;
+                        game.over = true; 
+                        createParticles({
+                            object: player,
+                            color: 'white',
+                            fades: true
+                        });
+                    }
+                }
         }
     })
 
@@ -401,8 +407,7 @@ function animate() {
 
     grids.forEach((grid, gridIndex) => {
         grid.update()
-        //spawning enemy grids
-        if (frames % 250 === 0 && grid.invaders.length > 0) {
+        if (frames % 400 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -422,37 +427,43 @@ function animate() {
 
 
                     setTimeout(() => {
-                        const invaderFound = grid.invaders.find((invader2
-                        ) => invader2 === invader
-                        )
-
+                        const invaderFound = grid.invaders.find((invader2) => invader2 === invader);
                         const projectileFound = projectiles.find(
-                            projectile2 => projectile2 === projectile)
-
-                        // remove invader and projectile
+                            projectile2 => projectile2 === projectile
+                        );
+                    
                         if (invaderFound && projectileFound) {
-                            hitmarker.play();
-                            score += 100
-                            scoreEl.innerHTML = score
+                            invader.health--; // Decrease invader's health
                             createParticles({
                                 object: invader,
                                 fades: true
-                            })
-                            grid.invaders.splice(i, 1)
-                            projectiles.splice(j, 1)
+                            });
+                            
 
-                            if (grid.invaders.length > 0) {
-                                const firstInvader = grid.invaders[0]
-                                const lastInvader = grid.invaders[grid.invaders.length - 1]
-
-                                grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x
-                                grid.position.x = firstInvader.position.x
-                            } else {
-                                grids.splice(gridIndex, 1)
+                            if (invader.health <= 0) { // Only remove invader if health is 0
+                                score += 100;
+                                scoreEl.innerHTML = score;
+                                createParticles({
+                                    object: invader,
+                                    fades: true
+                                });
+                    
+                                grid.invaders.splice(i, 1);
                             }
-
+                    
+                            projectiles.splice(j, 1); // Remove the projectile
+                    
+                            if (grid.invaders.length > 0) {
+                                const firstInvader = grid.invaders[0];
+                                const lastInvader = grid.invaders[grid.invaders.length - 1];
+                    
+                                grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x;
+                                grid.position.x = firstInvader.position.x;
+                            } else {
+                                grids.splice(gridIndex, 1); // Remove grid if no invaders are left
+                            }
                         }
-                    })
+                    }, 0);
                 }
             })
 
@@ -460,7 +471,7 @@ function animate() {
     })
 
     if (keys.a.pressed && player.position.x >= 0) { // zodat spaceshuttle niet weggaat uit scherm als je a inhoudt
-        player.velocity.x = -6
+        player.velocity.x = -6 
         player.rotation = -0.20
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {  // zodat spaceshuttle niet weggaat uit scherm als je d inhoudt
         player.velocity.x = 6
@@ -473,7 +484,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 300 + 150)
+        randomInterval = Math.floor(Math.random() * 400 + 200)
         frames = 0
     }
 
@@ -499,6 +510,7 @@ addEventListener('keydown', ({ key }) => {
             keys.d.pressed = true
             break
         case ' ':
+            shoot.play()
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,
