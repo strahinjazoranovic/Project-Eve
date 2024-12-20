@@ -6,7 +6,8 @@ const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
-
+const shoot = new Audio('sounds/.mp3') //dit is voor de shoot sound die je hoort als je schiet
+const lost = new Audio('sounds/.mp3') //Dit is het geluid dat je hoort als je dood gaat
 
 canvas.width = 1024
 canvas.height = 576
