@@ -503,7 +503,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 600 + 500)
+        randomInterval = Math.floor(Math.random() * 600 + 250)
         frames = 0
     }
 
