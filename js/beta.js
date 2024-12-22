@@ -256,8 +256,8 @@ class Grid {
 
         this.invaders = []
 
-        const columns = Math.floor(Math.random() * 3 + 2)
-        const rows = Math.floor(Math.random() * 3 + 2)
+        const columns = Math.floor(Math.random() * 6 + 2)
+        const rows = Math.floor(Math.random() * 2 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
             for (let y = 0; y < rows; y++) {
@@ -503,7 +503,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 750 + 500)
+        randomInterval = Math.floor(Math.random() * 600 + 500)
         frames = 0
     }
 
