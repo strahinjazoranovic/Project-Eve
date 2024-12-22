@@ -9,8 +9,13 @@ const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort w
 const shoot = new Audio('sounds/.mp3') //dit is voor de shoot sound die je hoort als je schiet
 const lost = new Audio('sounds/.mp3') //Dit is het geluid dat je hoort als je dood gaat
 
-canvas.width = 1500
-canvas.height = 750
+function resizeCanvas() {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+}
+
+window.addEventListener('resize', resizeCanvas)
+resizeCanvas()
 
 // Hier wordt de speler die jij bestuurt gespawnt 
 class Player {
@@ -74,8 +79,8 @@ class Player {
 
 
             if (this.position.x < 0) this.position.x = 0
-            if (this.position.x + this.width > canvas.width)
-                this.position.x = canvas.width - this.width
+            if (this.position.x + this.width > canvas.clientWidth)
+                this.position.x = canvas.clientWidth - this.width
         }
     }
 }

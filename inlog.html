@@ -7,30 +7,23 @@
     <title>Project Eve</title>
     <link rel="icon" href="img/spaceshuttle.png" type="image/icon type">
     <link rel="stylesheet" href="css/game.css">
-
 </head>
 
 <body>
-    <div id="inlog">
-        <h1 id="h1">PLEASE IDENTIFY YOURSELF</h1>
-
-        <div id="inlog1">
-            <form id="loginForm" action="home.html">
-                <label for="name"></label>
-                <input type="text" id="name" name="name" placeholder="Enter your name" required autocomplete="off">
-                <input type="submit" style="display: none;">
+    <h1 id="h1">PLEASE IDENTIFY YOURSELF</h1>
+    <div id="inlog2">
+        <div id="login1">
+            <form action="home.html">
+                <label for="name" id="name">Username:</label>
+                <input type="text" id="name" name="name"><br><br>
+                <label for="password" id="password">Password:</label>
+                <input type="password" id="password" name="password"><br><br>
+                <button type="button" onclick="alert('Dit wordt nog gemaakt!')" id="regbutton">Register</button>
+                <button type="submit" id="logbutton">Login</button>
             </form>
-
-            <a href="home.html"><button id="skipbutton">SKIP</button></a>
         </div>
-
-      
-            
-
     </div>
-
-
-    <script src="js/inlog.js"></script>
 </body>
+<script src="js/inlog.js"></script>
 
 </html>
