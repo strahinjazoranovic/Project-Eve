@@ -6,9 +6,20 @@ const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
 const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
-const shoot = new Audio('sounds/.mp3') //dit is voor de shoot sound die je hoort als je schiet
-const lost = new Audio('sounds/.mp3') //Dit is het geluid dat je hoort als je dood gaat
+const shoot = new Audio('sounds/hitmarker.mp3') //dit is voor de shoot sound die je hoort als je schiet
 
+// Als je op het scherm klikt dan stopt de muziek
+addEventListener('click', (audiobutton) => {
+    if (muziek.paused) {
+        muziek.play();
+        audiobutton.textContent = 'Pause Music';
+    } else {
+        muziek.pause();
+        audiobutton.textContent = 'Play Music';
+    }
+});
+
+// Hier wordt de canvas geresized
 function resizeCanvas() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
@@ -244,8 +255,8 @@ class Grid {
 
         this.invaders = []
 
-        const columns = Math.floor(Math.random() * 6 + 1)
-        const rows = Math.floor(Math.random() * 2 + 2)
+        const columns = Math.floor(Math.random() * 3 + 2)
+        const rows = Math.floor(Math.random() * 3 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
             for (let y = 0; y < rows; y++) {
@@ -286,7 +297,7 @@ const keys = {
         pressed: false
     }
 }
- 
+
 let frames = 0
 let randomInterval = Math.floor(Math.random() * 500 + 500)
 let game = {
@@ -295,7 +306,7 @@ let game = {
 }
 
 let score = 0
-let highScore = localStorage.getItem("highScore") || 0; 
+let highScore = localStorage.getItem("highScore") || 0;
 
 // Hier worden de starts aangemaakt die je over het scherm ziet vliegen
 for (let i = 0; i < 125; i++) {
@@ -337,7 +348,6 @@ function createParticles({ object, color, fades }) {
 function animate() {
     if (!game.active) return
     requestAnimationFrame(animate)
-    muziek.play();
     // Als de game over is dan krijg je de restart menu te zien
     if (game.over === true) {
         document.getElementById('restartMenu').style.display = 'flex';
@@ -377,25 +387,26 @@ function animate() {
             >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width) {
 
-                if (invaderProjectiles[index]) {
-                    invaderProjectiles.splice(index, 1);
-                    player.health--; 
+            if (invaderProjectiles[index]) {
+                invaderProjectiles.splice(index, 1);
+                player.health--;
+                hit.play();
+                createParticles({
+                    object: player,
+                    color: 'white',
+                    fades: true
+                });
+
+                if (player.health <= 0) {
+                    player.opacity = 0;
+                    game.over = true;
                     createParticles({
                         object: player,
                         color: 'white',
                         fades: true
                     });
-                
-                    if (player.health <= 0) {
-                        player.opacity = 0;
-                        game.over = true; 
-                        createParticles({
-                            object: player,
-                            color: 'white',
-                            fades: true
-                        });
-                    }
                 }
+            }
         }
     })
 
@@ -411,6 +422,7 @@ function animate() {
         }
     })
 
+    
     grids.forEach((grid, gridIndex) => {
         grid.update()
         if (frames % 400 === 0 && grid.invaders.length > 0) {
@@ -437,14 +449,14 @@ function animate() {
                         const projectileFound = projectiles.find(
                             projectile2 => projectile2 === projectile
                         );
-                    
+
                         if (invaderFound && projectileFound) {
                             invader.health--; // Decrease invader's health
                             createParticles({
                                 object: invader,
                                 fades: true
                             });
-                            
+
 
                             if (invader.health === 0) { // Only remove invader if health is 0
                                 score += 100;
@@ -453,16 +465,16 @@ function animate() {
                                     object: invader,
                                     fades: true
                                 });
-                    
+
                                 grid.invaders.splice(i, 1);
                             }
-                    
+
                             projectiles.splice(j, 1); // Remove the projectile
-                    
+
                             if (grid.invaders.length > 0) {
                                 const firstInvader = grid.invaders[0];
                                 const lastInvader = grid.invaders[grid.invaders.length - 1];
-                    
+
                                 grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x;
                                 grid.position.x = firstInvader.position.x;
                             } else {
@@ -477,7 +489,7 @@ function animate() {
     })
 
     if (keys.a.pressed && player.position.x >= 0) { // zodat spaceshuttle niet weggaat uit scherm als je a inhoudt
-        player.velocity.x = -6 
+        player.velocity.x = -6
         player.rotation = -0.20
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {  // zodat spaceshuttle niet weggaat uit scherm als je d inhoudt
         player.velocity.x = 6
@@ -490,11 +502,11 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 400 + 200)
+        randomInterval = Math.floor(Math.random() * 750 + 500)
         frames = 0
     }
 
-    
+
     frames++
 }
 
