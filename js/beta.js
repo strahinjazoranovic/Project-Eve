@@ -174,7 +174,7 @@ class Invader {
             y: 0
         }
 
-        this.health = 2; // dit is de health van de enemies
+        this.health = 1; // dit is de health van de enemies
 
 
         const image = new Image()
@@ -446,7 +446,7 @@ function animate() {
                             });
                             
 
-                            if (invader.health <= 0) { // Only remove invader if health is 0
+                            if (invader.health === 0) { // Only remove invader if health is 0
                                 score += 100;
                                 scoreEl.innerHTML = score;
                                 createParticles({
