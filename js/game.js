@@ -1,12 +1,11 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const scoreEl = document.querySelector('#scoreEl')
-const healthEL = document.querySelector('#healthEL')
-const speedSlider = document.getElementById('speedSlider')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/beat1.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
+const muziek = new Audio('sounds/beat.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
 const shoot = new Audio('sounds/hitmarker.mp3') //dit is voor de shoot sound die je hoort als je schiet
+const healthup = new Audio('sounds/healthup.mp3') //dit is voor de healthup sound die je hoort als je healthup pakt
 
 // Als je op het scherm klikt dan stopt de muziek
 addEventListener('click', (audiobutton) => {
@@ -39,6 +38,7 @@ class Player {
         this.rotation
         this.opacity = 1;
         this.health = 4; // Dit is de health van de speler
+        this.maxHealth = 8; // Dit is de maximale health van de speler
 
         const image = new Image()
         image.src = './img/spaceshuttle.png'
@@ -55,39 +55,60 @@ class Player {
     }
 
     draw() {
-
         c.save()
         c.globalAlpha = this.opacity
         c.translate(
-            player.position.x + player.width / 2,
-            player.position.y + player.height / 2
-
+            this.position.x + this.width / 2,
+            this.position.y + this.height / 2
         )
         c.rotate(this.rotation)
-
-        c.translate(
-            -player.position.x - player.width / 2,
-            -player.position.y - player.height / 2
-
+        c.drawImage(
+            this.image,
+            -this.width / 2,
+            -this.height / 2,
+            this.width,
+            this.height
         )
+        c.restore()
+    }
 
-        if (this.image) {
-            c.drawImage(
-                this.image,
-                this.position.x,
-                this.position.y,
-                this.width,
-                this.height
-            )
-            c.restore()
+    drawHealthBar() {
+        const barWidth = 200
+        const barHeight = 25
+        const barX = canvas.width - barWidth - 20
+        const barY = 20
+
+        // Calculate health percentage
+        const healthPercentage = this.health / this.maxHealth
+
+        // Determine health bar color
+        let healthColor = 'green'
+        if (healthPercentage <= 0.25) {
+            healthColor = 'red'
+        } else if (healthPercentage <= 0.5) {
+            healthColor = 'yellow'
         }
+
+        // Draw the health bar background
+        c.fillStyle = 'gray'
+        c.fillRect(barX, barY, barWidth, barHeight)
+
+        // Draw the health bar foreground
+        c.fillStyle = healthColor
+        c.fillRect(barX, barY, barWidth * healthPercentage, barHeight)
+
+        // Draw the health text
+        c.fillStyle = 'white'
+        c.font = '20px monospace'
+        c.textAlign = 'center'
+        c.fillText(`${this.health} / ${this.maxHealth}`, barX + barWidth / 2, barY + barHeight / 1.5)
     }
 
     update() {
+        this.drawHealthBar()
         if (this.image) {
             this.draw()
             this.position.x += this.velocity.x
-
 
             if (this.position.x < 0) this.position.x = 0
             if (this.position.x + this.width > canvas.clientWidth)
@@ -165,7 +186,7 @@ class InvaderProjectile {
     }
 
     draw() {
-        c.fillStyle = 'white'
+        c.fillStyle = 'purple'
         c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
     }
@@ -306,6 +327,8 @@ let game = {
 }
 
 let score = 0
+
+
 let highScore = localStorage.getItem("highScore") || 0;
 
 // Hier worden de starts aangemaakt die je over het scherm ziet vliegen
@@ -320,7 +343,7 @@ for (let i = 0; i < 125; i++) {
             x: 0,
             y: 2.5
         },
-        radius: Math.random() * 2.5,
+        radius: Math.random() * 3.5,
         color: 'white'
     }))
 }
@@ -390,7 +413,6 @@ function animate() {
             if (invaderProjectiles[index]) {
                 invaderProjectiles.splice(index, 1);
                 player.health--;
-                hit.play();
                 createParticles({
                     object: player,
                     color: 'white',
@@ -461,6 +483,23 @@ function animate() {
                             if (invader.health === 0) { // Only remove invader if health is 0
                                 score += 100;
                                 scoreEl.innerHTML = score;
+            
+                                // Check if score is a multiple of 10,000
+                                if (score % 5000 === 0) {
+                                    healthup.play();
+                                    player.health++;
+                                    if (player.health > player.maxHealth) {
+                                        player.health = player.maxHealth; // Ensure health does not exceed max health
+                                    }
+                                if (score % 10000 === 0){
+                                    healthup.play();
+                                    player.health ++;
+                                    if (player.health > player.maxHealth) {
+                                        player.health = player.maxHealth; // Ensure health does not exceed max health
+                                    }
+                                }
+                                }
+            
                                 createParticles({
                                     object: invader,
                                     fades: true
@@ -553,5 +592,3 @@ addEventListener('keyup', ({ key }) => {
             break
     }
 })
-
-
