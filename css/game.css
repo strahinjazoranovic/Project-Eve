@@ -1,7 +1,5 @@
 body {
     margin: 0px;
-    animation-name: fadein;
-    animation-duration: 1.8s;
     background-color: black;
 }
 
@@ -17,6 +15,7 @@ body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
+
 /* dit is voor de inlog pagina waar jij je gegevens invoert */
 form {
     text-align: center;
@@ -27,13 +26,11 @@ form {
     appearance: none;
     border-style: none;
     border: 1px solid black;
-    background-color: rgb(177, 1, 177);
+    background-color: purple;
     border-radius: 5px;
     font-size: 20px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
-
-
 
 /* Play menu styling */
 #playMenu {
@@ -46,11 +43,12 @@ form {
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.5);
-    color: rgb(177, 1, 177);
+    color: purple;
     font-size: 38px;
     font-family: monospace;
     flex-direction: column;
     z-index: 1000;
+    animation: SlideinLeft 1s;
 }
 
 /* Play button styling */
@@ -64,14 +62,10 @@ form {
     background-color: #00FFFF;
     border: none;
     border-radius: 5px;
-    color: rgb(177, 1, 177);
+    color: purple;
     transition: background-color 0.3s;
 }
 
-/* Play button styling wanneer het wordt aangeraakt*/
-#playButton:hover {
-    background-color: black
-}
 
 /* Dit is voor de menu die je ziet wanneer je afgaat in de game*/
 #restartMenu {
@@ -84,13 +78,12 @@ form {
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0);
-    color: rgb(177, 1, 177);
+    color: purple;
     font-size: 38px;
     font-family: monospace;
     flex-direction: column;
     z-index: 1000;
-    animation-name: fadein;
-    animation-duration: 2s;
+    animation: SlideinRight 1s;
 }
 
 /* Dit is voor de knop die je ziet als je afgaat*/
@@ -104,14 +97,11 @@ form {
     background-color: #00FFFF;
     border: none;
     border-radius: 5px;
-    color: rgb(177, 1, 177);
+    color: purple;
     transition: background-color 0.3s;
 }
 
-/* dit is voor de restartbutton knop wanneer je erover heen gaat*/
-#restartButton:hover {
-    background-color: black;
-}
+
 
 /* Dit is de backbutton die je ziet in de tutorial */
 #backbutton {
@@ -124,14 +114,20 @@ form {
     background-color: #00FFFF;
     border: none;
     border-radius: 5px;
-    color: rgb(177, 1, 177);
+    color: purple;
     transition: background-color 0.3s;
 }
 
-/* Dit is voor wanneer je over de backbutton heen gaat */
-#backbutton:hover {
-    background-color: black;
+a:hover,
+#logbutton:hover,
+#regbutton:hover,
+#playButton:hover,
+#backbutton:hover,
+#restartButton:hover
+ {
+    opacity: 0.6;
 }
+
 
 /* dit is voor tekst bij de tutorial*/
 #controls {
@@ -154,12 +150,15 @@ form {
     font-family: monospace;
     font-size: 30px;
     margin-top: 350px;
+    animation: scale 1s;
 }
 
 /* dit is de div die wordt gebruikt  om de input field in het midden van de eerste inlog pagina te zetten*/
 #inlog2 {
     display: flex;
     justify-content: center;
+    margin-bottom: 250px;
+    animation: scale 1s;
 }
 
 /* dit is de input field waar jij je naam invoert*/
@@ -199,7 +198,7 @@ form {
     margin-left: 40px;
     margin-right: 40px;
     margin-top: 80px;
-    animation: SlideinLeft 0.8s;
+    animation: scale 1s;
 }
 
 /* dit is de position properties voor #form */
@@ -252,11 +251,7 @@ a {
     color: white;
 }
 
-a:hover,
-#logbutton:hover,
-#regbutton:hover {
-    opacity: 0.6;
-}
+
 
 /* Dit is de titel div voor de Project Eve bovenin*/
 #title {
@@ -271,7 +266,7 @@ a:hover,
     text-align: center;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     border-radius: 5px;
-    font-size: 80px;
+    font-size: 60px;
     margin: 0px;
 }
 
@@ -301,6 +296,48 @@ a:hover,
     margin: 0px;
 }
 
+/* Dit is voor de onderkant van de pagina met de copyright symbolen */
+footer {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding-top: 0px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: purple;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 20px;
+    margin-top: 100px;
+    animation: foot linear;
+    animation-timeline: view();
+    animation-range: entry 0;
+}
+
+/* Dit is de animatie voor een element die links komt */
+@keyframes SlideinLeft {
+    from {
+        transform: translateX(-2400px);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Dit is de animatie voor een element die rechts komt */
+@keyframes SlideinRight {
+    from {
+        opacity: 0.1;
+        transform: translateX(2400px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @keyframes fadein {
 
     /* dit zijn de animations die je ziet op de home pagina */
@@ -310,6 +347,27 @@ a:hover,
 
     to {
         opacity: 1;
+    }
+}
+
+/* Dit is de animatie voor de footer*/
+@keyframes foot {
+    from {
+      opacity: 0;
+      scale: 0.5;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+}
+
+@keyframes scale {
+    from {
+        scale: 0.1
+    }
+    to {
+        scale: 1;
     }
 }
 
@@ -328,6 +386,10 @@ a:hover,
     }
 
     #h3 {
-        font-size: 50px;
+        font-size: 40px;
+    }
+
+    footer {
+        font-size: 16px;
     }
 }
