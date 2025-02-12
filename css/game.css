@@ -1,7 +1,11 @@
 body {
     margin: 0px;
     background-color: black;
-    overflow: hidden;
+}
+
+/* Dit is zodat je niet de scrollbar ziet */
+::-webkit-scrollbar {
+    display: none;
 }
 
 
@@ -49,7 +53,7 @@ form {
     font-family: monospace;
     flex-direction: column;
     z-index: 1000;
-    animation: SlideinLeft 1s;
+    animation: scale 0.8s
 }
 
 /* Play button styling */

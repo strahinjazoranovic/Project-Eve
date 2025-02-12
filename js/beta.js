@@ -1,3 +1,4 @@
+// This is also a stable version but here stuff gets tested before it goes to the game.js   
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 const scoreEl = document.querySelector('#scoreEl')
@@ -17,6 +18,8 @@ addEventListener('click', (audiobutton) => {
         audiobutton.textContent = 'Play Music';
     }
 });
+
+
 
 // Hier wordt de canvas geresized
 function resizeCanvas() {
@@ -98,7 +101,7 @@ class Player {
         c.fillRect(barX, barY, barWidth * healthPercentage, barHeight)
 
         // Draw the health text
-        c.fillStyle = 'white'
+        c.fillStyle = 'black'
         c.font = '20px monospace'
         c.textAlign = 'center'
         c.fillText(`${this.health} / ${this.maxHealth}`, barX + barWidth / 2, barY + barHeight / 1.5)
@@ -205,9 +208,6 @@ class Invader {
             x: 0,
             y: 0
         }
-
-        this.health = 1; // dit is de health van de enemies
-
 
         const image = new Image()
         image.src = './img/eindbaas.png'
@@ -444,10 +444,10 @@ function animate() {
         }
     })
 
-    
+
     grids.forEach((grid, gridIndex) => {
         grid.update()
-        if (frames % 400 === 0 && grid.invaders.length > 0) {
+        if (frames % 100 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -463,9 +463,6 @@ function animate() {
                     invader.position.x + invader.width &&
                     projectile.position.y + projectile.radius >= invader.position.y
                 ) {
-
-
-
                     setTimeout(() => {
                         const invaderFound = grid.invaders.find((invader2) => invader2 === invader);
                         const projectileFound = projectiles.find(
@@ -473,39 +470,34 @@ function animate() {
                         );
 
                         if (invaderFound && projectileFound) {
-                            invader.health--; // Decrease invader's health
+                            grid.invaders.splice(i, 1); // Remove the invaders
+                            
                             createParticles({
                                 object: invader,
                                 fades: true
                             });
 
-
                             if (invader.health === 0) { // Only remove invader if health is 0
                                 score += 100;
                                 scoreEl.innerHTML = score;
-            
-                                // Check if score is a multiple of 10,000
+
+                                // Check if score is a multiple of 5000
                                 if (score % 5000 === 0) {
                                     healthup.play();
                                     player.health++;
                                     if (player.health > player.maxHealth) {
                                         player.health = player.maxHealth; // Ensure health does not exceed max health
                                     }
-                                if (score % 10000 === 0){
+                                }
+
+                                // Check if score is a multiple of 10000
+                                if (score % 10000 === 0) {
                                     healthup.play();
-                                    player.health ++;
+                                    player.health++;
                                     if (player.health > player.maxHealth) {
                                         player.health = player.maxHealth; // Ensure health does not exceed max health
                                     }
                                 }
-                                }
-            
-                                createParticles({
-                                    object: invader,
-                                    fades: true
-                                });
-
-                                grid.invaders.splice(i, 1);
                             }
 
                             projectiles.splice(j, 1); // Remove the projectile
@@ -523,7 +515,6 @@ function animate() {
                     }, 0);
                 }
             })
-
         })
     })
 
@@ -541,7 +532,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 600 + 250)
+        randomInterval = Math.floor(Math.random() * 500 + 250)
         frames = 0
     }
 
@@ -567,7 +558,7 @@ addEventListener('keydown', ({ key }) => {
             keys.d.pressed = true
             break
         case ' ':
-            shoot.play()
+            shoot.play();
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,
