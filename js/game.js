@@ -18,6 +18,8 @@ addEventListener('click', (audiobutton) => {
     }
 });
 
+
+
 // Hier wordt de canvas geresized
 function resizeCanvas() {
     canvas.width = window.innerWidth
@@ -205,9 +207,6 @@ class Invader {
             x: 0,
             y: 0
         }
-
-        this.health = 1; // dit is de health van de enemies
-
 
         const image = new Image()
         image.src = './img/eindbaas.png'
@@ -447,7 +446,7 @@ function animate() {
     
     grids.forEach((grid, gridIndex) => {
         grid.update()
-        if (frames % 400 === 0 && grid.invaders.length > 0) {
+        if (frames % 100 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
@@ -472,15 +471,14 @@ function animate() {
                             projectile2 => projectile2 === projectile
                         );
 
-                        if (invaderFound && projectileFound) {
-                            invader.health--; // Decrease invader's health
+                        if (invaderFound && projectileFound){
                             createParticles({
                                 object: invader,
                                 fades: true
                             });
 
 
-                            if (invader.health === 0) { // Only remove invader if health is 0
+                            if (invaderFound && projectileFound) { // Only remove invader if a bullet hits
                                 score += 100;
                                 scoreEl.innerHTML = score;
             
@@ -541,7 +539,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 600 + 250)
+        randomInterval = Math.floor(Math.random() * 500 + 250)
         frames = 0
     }
 
@@ -568,6 +566,7 @@ addEventListener('keydown', ({ key }) => {
             break
         case ' ':
             shoot.play()
+
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,

@@ -1,6 +1,7 @@
 body {
     margin: 0px;
     background-color: black;
+    overflow: hidden;
 }
 
 
@@ -44,7 +45,7 @@ form {
     justify-content: center;
     background: rgba(0, 0, 0, 0.5);
     color: purple;
-    font-size: 38px;
+    font-size: 36px;
     font-family: monospace;
     flex-direction: column;
     z-index: 1000;
