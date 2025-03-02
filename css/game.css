@@ -1,41 +1,24 @@
 body {
     margin: 0px;
     background-color: black;
+    font-family: "Orbitron", sans-serif;
 }
 
-/* Dit is zodat je niet de scrollbar ziet */
+
+.orbitron-uniquifier {
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: weight;
+    font-style: normal;
+}
+
+
+
+/* So that the scrollbar is not visible on the every page */
 ::-webkit-scrollbar {
     display: none;
 }
 
-
-/* login button styling */
-#logbutton {
-    appearance: none;
-    border-style: none;
-    border: 1px solid black;
-    background-color: lightgreen;
-    border-radius: 5px;
-    font-size: 20px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-
-/* dit is voor de inlog pagina waar jij je gegevens invoert */
-form {
-    text-align: center;
-}
-
-/* register button styling */
-#regbutton {
-    appearance: none;
-    border-style: none;
-    border: 1px solid black;
-    background-color: purple;
-    border-radius: 5px;
-    font-size: 20px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
 
 /* Play menu styling */
 #playMenu {
@@ -50,7 +33,6 @@ form {
     background: rgba(0, 0, 0, 0.5);
     color: purple;
     font-size: 36px;
-    font-family: monospace;
     flex-direction: column;
     z-index: 1000;
     animation: scale 0.8s
@@ -85,7 +67,6 @@ form {
     background: rgba(0, 0, 0);
     color: purple;
     font-size: 38px;
-    font-family: monospace;
     flex-direction: column;
     z-index: 1000;
     animation: SlideinRight 1s;
@@ -128,8 +109,7 @@ a:hover,
 #regbutton:hover,
 #playButton:hover,
 #backbutton:hover,
-#restartButton:hover
- {
+#restartButton:hover {
     opacity: 0.6;
 }
 
@@ -152,7 +132,6 @@ a:hover,
 #h1 {
     color: purple;
     text-align: center;
-    font-family: monospace;
     font-size: 30px;
     margin-top: 350px;
     animation: scale 1s;
@@ -177,7 +156,6 @@ a:hover,
     border-color: #00FFFF;
     color: white;
     border-radius: 5px;
-    font-family: monospace;
 }
 
 
@@ -186,7 +164,6 @@ a:hover,
 .h2 {
     color: purple;
     text-align: center;
-    font-family: monospace;
     font-size: 80px;
     margin: 0px;
 }
@@ -222,11 +199,6 @@ a:hover,
     border-radius: 20px;
 }
 
-#leaderbordtext {
-    font-size: 20px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: white;
-}
 
 /* dit zijn de knoppen die je ziet op de home pagina waarneer je ingelogd bent*/
 .knop1 {
@@ -238,16 +210,11 @@ a:hover,
     background-color: #00FFFF;
     border: 4px solid #00FFFF;
     border-radius: 20px;
-    font-family: monospace;
     cursor: pointer;
     font-size: 25px;
     padding-top: 20px;
     padding-bottom: 20px;
     margin-top: 20px;
-}
-
-.knop1:hover {
-    background-color: #00FFFF;
 }
 
 /* dit is voor alle link*/
@@ -269,7 +236,6 @@ a {
 #h4 {
     color: #00FFFF;
     text-align: center;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     border-radius: 5px;
     font-size: 60px;
     margin: 0px;
@@ -283,18 +249,12 @@ a {
 #skipbutton {
     border-radius: 10px;
     padding: 10px;
-    font-family: monospace;
     margin-left: 20px;
     background-color: black;
     border-style: none;
     color: purple
 }
 
-/* Dit is voor de skip button die je ziet als je jezelf geen naam wilt geven */
-#skipbutton:hover {
-    background-color: purple;
-    color: black;
-}
 
 /* Dit is voor de Project EVE die je ziet op het startscherm/restartscherm */
 #titlemenu {
@@ -311,7 +271,6 @@ footer {
     justify-content: center;
     text-align: center;
     color: purple;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 20px;
     margin-top: 100px;
     animation: foot linear;
@@ -358,12 +317,13 @@ footer {
 /* Dit is de animatie voor de footer*/
 @keyframes foot {
     from {
-      opacity: 0;
-      scale: 0.5;
+        opacity: 0;
+        scale: 0.5;
     }
+
     to {
-      opacity: 1;
-      scale: 1;
+        opacity: 1;
+        scale: 1;
     }
 }
 
@@ -371,6 +331,7 @@ footer {
     from {
         scale: 0.1
     }
+
     to {
         scale: 1;
     }

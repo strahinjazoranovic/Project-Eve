@@ -4,33 +4,22 @@ const c = canvas.getContext('2d')
 const scoreEl = document.querySelector('#scoreEl')
 const playMenu = document.getElementById('playMenu')
 const playButton = document.getElementById('playButton')
-const muziek = new Audio('sounds/beat.mp3') // Dit is het liedje dat je hoort wanneer je het spel speelt
-const shoot = new Audio('sounds/hitmarker.mp3') //dit is voor de shoot sound die je hoort als je schiet
+const hit = new Audio('sounds/hitmarker.mp3') //This is the audio you hear when you hit an invader
 const healthup = new Audio('sounds/healthup.mp3') //dit is voor de healthup sound die je hoort als je healthup pakt
 
-// Als je op het scherm klikt dan stopt de muziek
-addEventListener('click', (audiobutton) => {
-    if (muziek.paused) {
-        muziek.play();
-        audiobutton.textContent = 'Pause Music';
-    } else {
-        muziek.pause();
-        audiobutton.textContent = 'Play Music';
-    }
-});
 
-
-
-// Hier wordt de canvas geresized
+// The canvas gets resized when the window gets resized
 function resizeCanvas() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 }
 
+// The canvas gets resized when the window gets resized
 window.addEventListener('resize', resizeCanvas)
 resizeCanvas()
 
-// Hier wordt de speler die jij bestuurt gespawnt 
+
+// Player gets spawned here with all the properties
 class Player {
     constructor() {
         this.velocity = {
@@ -40,13 +29,13 @@ class Player {
 
         this.rotation
         this.opacity = 1;
-        this.health = 4; // Dit is de health van de speler
-        this.maxHealth = 8; // Dit is de maximale health van de speler
+        this.health = 4; // This is the health of the player
+        this.maxHealth = 8; // This is the maximum health of the player
 
         const image = new Image()
         image.src = './img/spaceshuttle.png'
         image.onload = () => {
-            const scale = 0.10
+            const scale = 0.09
             this.image = image
             this.width = image.width * scale
             this.height = image.height * scale
@@ -120,7 +109,7 @@ class Player {
     }
 }
 
-// Hier worden de Projectiles gespawnt die jij over het scherm heen schiet
+// Bullets gets spawned here with all the properties
 class Projectile {
     constructor({ position, velocity }) {
         this.position = position
@@ -146,7 +135,7 @@ class Projectile {
 }
 
 
-// Dit is de Particles die jij ziet wanneer jij dood gaat
+// Stars for the background get spawned here with all the properties
 class Particle {
     constructor({ position, velocity, radius, color, fades }) {
         this.position = position
@@ -178,7 +167,7 @@ class Particle {
     }
 }
 
-// Dit zijn de Projectiles die de enemies schieten
+// Invader bullets get spawned here with all the properties
 class InvaderProjectile {
     constructor({ position, velocity }) {
         this.position = position
@@ -201,7 +190,7 @@ class InvaderProjectile {
     }
 }
 
-// Dit zijn de enemies
+// Invaders get spawned here with all the properties
 class Invader {
     constructor({ position }) {
         this.velocity = {
@@ -261,7 +250,7 @@ class Invader {
     }
 }
 
-//Dit zijn de enemies die worden gespawned in grids
+// Invader grids get spawned here with all the properties
 class Grid {
     constructor() {
         this.position = {
@@ -329,9 +318,7 @@ let game = {
 let score = 0
 
 
-let highScore = localStorage.getItem("highScore") || 0;
-
-// Hier worden de starts aangemaakt die je over het scherm ziet vliegen
+// This is for the stars you can see fly across the canvas
 for (let i = 0; i < 125; i++) {
     particles.push(new Particle({
         position: {
@@ -343,12 +330,12 @@ for (let i = 0; i < 125; i++) {
             x: 0,
             y: 2.5
         },
-        radius: Math.random() * 3.5,
+        radius: Math.random() * 4.5,
         color: 'white'
     }))
 }
 
-// Dit zijn de particles die jij ziet wanneer de enemies geschoten worden
+// These are the particles that get spawned when you hit an invader or get hit by an invader
 function createParticles({ object, color, fades }) {
     for (let i = 0; i < 15; i++) {
         particles.push(new Particle({
@@ -371,7 +358,7 @@ function createParticles({ object, color, fades }) {
 function animate() {
     if (!game.active) return
     requestAnimationFrame(animate)
-    // Als de game over is dan krijg je de restart menu te zien
+    // If the game is over(when you die) then the restart menu will pop up and the music will stop
     if (game.over === true) {
         document.getElementById('restartMenu').style.display = 'flex';
         muziek.pause();
@@ -415,16 +402,17 @@ function animate() {
                 player.health--;
                 createParticles({
                     object: player,
-                    color: 'white',
+                    color: 'red',
                     fades: true
                 });
 
+                
                 if (player.health <= 0) {
                     player.opacity = 0;
                     game.over = true;
                     createParticles({
                         object: player,
-                        color: 'white',
+                        color: 'red',
                         fades: true
                     });
                 }
@@ -444,16 +432,16 @@ function animate() {
         }
     })
 
-
+    // Invader shootmechanics
     grids.forEach((grid, gridIndex) => {
         grid.update()
-        if (frames % 100 === 0 && grid.invaders.length > 0) {
+        if (frames % 300 === 0 && grid.invaders.length > 0) {
             grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
         }
         grid.invaders.forEach((invader, i) => {
             invader.update({ velocity: grid.velocity })
 
-            // projectiles raken enemy
+            // Invader hitbox
             projectiles.forEach((projectile, j) => {
                 if (projectile.position.y - projectile.radius <=
                     invader.position.y + invader.height &&
@@ -470,14 +458,15 @@ function animate() {
                         );
 
                         if (invaderFound && projectileFound) {
-                            grid.invaders.splice(i, 1); // Remove the invaders
-                            
-                            createParticles({
+                            grid.invaders.splice(i, 1); // Remove the invaders when hit
+                            hit.play(); //This is the sound you hear when you hit an invader
+
+                            createParticles({ //Make the particles when a invader is hit
                                 object: invader,
                                 fades: true
                             });
 
-                            if (invader.health === 0) { // Only remove invader if health is 0
+                            if (grid.invaders.splice(i, 1)) { // If an invader is removed add score and health if score is 5000 or 10000
                                 score += 100;
                                 scoreEl.innerHTML = score;
 
@@ -518,10 +507,10 @@ function animate() {
         })
     })
 
-    if (keys.a.pressed && player.position.x >= 0) { // zodat spaceshuttle niet weggaat uit scherm als je a inhoudt
+    if (keys.a.pressed && player.position.x >= 0) { // This is for the spaceshuttle to move around when you hit A or D on your keyboard
         player.velocity.x = -6
         player.rotation = -0.20
-    } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {  // zodat spaceshuttle niet weggaat uit scherm als je d inhoudt
+    } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) { // This is so that the spaceshuttle does not go off the screen
         player.velocity.x = 6
         player.rotation = 0.20
     } else {
@@ -532,7 +521,7 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 500 + 250)
+        randomInterval = Math.floor(Math.random() * 600 + 250)
         frames = 0
     }
 
@@ -540,14 +529,14 @@ function animate() {
     frames++
 }
 
-// Als je op play klikt dan start te game
+// If you click play the game will start
 playButton.addEventListener('click', () => {
     playMenu.style.display = 'none'  // Hide the play menu
     game.active = true  // Set game to active
     animate()  // Start the game loop
 })
 
-// Hier zijn de controls gecodeerd
+// These are the controls for the game
 addEventListener('keydown', ({ key }) => {
     if (game.over) return
     switch (key) {
@@ -557,8 +546,7 @@ addEventListener('keydown', ({ key }) => {
         case 'd':
             keys.d.pressed = true
             break
-        case ' ':
-            shoot.play();
+        case ' ': //This is for the spacebar to shoot
             projectiles.push(new Projectile({
                 position: {
                     x: player.position.x + player.width / 2,
