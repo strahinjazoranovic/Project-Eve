@@ -65,8 +65,8 @@ class Player {
     }
 
     drawHealthBar() {
-        const barWidth = 200
-        const barHeight = 25
+        const barWidth = 220
+        const barHeight = 40
         const barX = canvas.width - barWidth - 20
         const barY = 20
 
@@ -91,7 +91,7 @@ class Player {
 
         // Draw the health text
         c.fillStyle = 'black'
-        c.font = '20px monospace'
+        c.font = '19px Orbitron'
         c.textAlign = 'center'
         c.fillText(`${this.health} / ${this.maxHealth}`, barX + barWidth / 2, barY + barHeight / 1.5)
     }
@@ -212,6 +212,7 @@ class Invader {
         }
     }
 
+    // Draw the invader
     draw() {
 
 
@@ -266,7 +267,7 @@ class Grid {
         this.invaders = []
 
         const columns = Math.floor(Math.random() * 6 + 2)
-        const rows = Math.floor(Math.random() * 2 + 2)
+        const rows = Math.floor(Math.random() * 1 + 2)
         this.width = columns * 110
         for (let x = 0; x < columns; x++) {
             for (let y = 0; y < rows; y++) {
@@ -291,6 +292,7 @@ class Grid {
     }
 }
 
+// All the variables get spawned here
 const player = new Player()
 const projectiles = []
 const grids = []
@@ -328,7 +330,7 @@ for (let i = 0; i < 125; i++) {
 
         velocity: {
             x: 0,
-            y: 2.5
+            y: 2.6
         },
         radius: Math.random() * 4.5,
         color: 'white'
@@ -355,13 +357,14 @@ function createParticles({ object, color, fades }) {
     }
 }
 
+// This is the game loop
 function animate() {
     if (!game.active) return
     requestAnimationFrame(animate)
     // If the game is over(when you die) then the restart menu will pop up and the music will stop
     if (game.over === true) {
         document.getElementById('restartMenu').style.display = 'flex';
-        muziek.pause();
+        // muziek.pause(); // This is for the music in game which isn't used at the moment
     }
     c.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
@@ -397,6 +400,7 @@ function animate() {
             >= player.position.x &&
             invaderProjectile.position.x <= player.position.x + player.width) {
 
+            // If the player gets hit by an invader projectile then remove the projectile and decrease the health of the player and create particles for damage
             if (invaderProjectiles[index]) {
                 invaderProjectiles.splice(index, 1);
                 player.health--;
@@ -406,13 +410,13 @@ function animate() {
                     fades: true
                 });
 
-                
+                // Remove the player if health is 0
                 if (player.health <= 0) {
                     player.opacity = 0;
                     game.over = true;
                     createParticles({
                         object: player,
-                        color: 'red',
+                        color: 'orange',
                         fades: true
                     });
                 }
@@ -508,8 +512,8 @@ function animate() {
     })
 
     if (keys.a.pressed && player.position.x >= 0) { // This is for the spaceshuttle to move around when you hit A or D on your keyboard
-        player.velocity.x = -6
-        player.rotation = -0.20
+        player.velocity.x = -6 // This is the speed of the spaceshuttle
+        player.rotation = -0.20 // This is the rotation of the spaceshuttle
     } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) { // This is so that the spaceshuttle does not go off the screen
         player.velocity.x = 6
         player.rotation = 0.20
@@ -521,13 +525,16 @@ function animate() {
     // spawning new enemies with grids
     if (frames % randomInterval === 0) {
         grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 600 + 250)
+        randomInterval = Math.floor(Math.random() * 500 + 200) // Change the spawn rate of the enemies
         frames = 0
     }
 
-
     frames++
 }
+
+// Add variables for cooldown
+let lastShotTime = 0;
+const shootCooldown = 80; // Cooldown period in milliseconds for shooting
 
 // If you click play the game will start
 playButton.addEventListener('click', () => {
@@ -546,17 +553,21 @@ addEventListener('keydown', ({ key }) => {
         case 'd':
             keys.d.pressed = true
             break
-        case ' ': //This is for the spacebar to shoot
-            projectiles.push(new Projectile({
-                position: {
-                    x: player.position.x + player.width / 2,
-                    y: player.position.y
-                },
-                velocity: {
-                    x: 0,
-                    y: -8
-                }
-            }))
+        case ' ': // This is for the spacebar to shoot
+            const currentTime = Date.now();
+            if (currentTime - lastShotTime >= shootCooldown) {
+                projectiles.push(new Projectile({
+                    position: {
+                        x: player.position.x + player.width / 2,
+                        y: player.position.y
+                    },
+                    velocity: {
+                        x: 0,
+                        y: -8
+                    }
+                }))
+                lastShotTime = currentTime; // Update the last shot time
+            }
             break
     }
 })

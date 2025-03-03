@@ -4,7 +4,7 @@ body {
     font-family: "Orbitron", sans-serif;
 }
 
-
+/* This is for the font that is used in the whole site */
 .orbitron-uniquifier {
     font-family: "Orbitron", sans-serif;
     font-optical-sizing: auto;
@@ -12,13 +12,10 @@ body {
     font-style: normal;
 }
 
-
-
 /* So that the scrollbar is not visible on the every page */
 ::-webkit-scrollbar {
     display: none;
 }
-
 
 /* Play menu styling */
 #playMenu {
@@ -40,6 +37,7 @@ body {
 
 /* Play button styling */
 #playButton {
+    width: 400px;
     margin-top: 20px;
     padding: 10px;
     padding-left: 100px;
@@ -51,8 +49,8 @@ body {
     border-radius: 5px;
     color: purple;
     transition: background-color 0.3s;
+    font-family: "Orbitron", sans-serif;
 }
-
 
 /* Dit is voor de menu die je ziet wanneer je afgaat in de game*/
 #restartMenu {
@@ -70,10 +68,12 @@ body {
     flex-direction: column;
     z-index: 1000;
     animation: SlideinRight 1s;
+    margin: 0px;
 }
 
 /* Dit is voor de knop die je ziet als je afgaat*/
 #restartButton {
+    width: 400px;
     margin-top: 20px;
     padding: 10px;
     padding-left: 100px;
@@ -85,12 +85,14 @@ body {
     border-radius: 5px;
     color: purple;
     transition: background-color 0.3s;
+    font-family: "Orbitron", sans-serif;
 }
 
 
 
 /* Dit is de backbutton die je ziet in de tutorial */
 #backbutton {
+    width: 400px;
     margin-top: 20px;
     padding: 10px;
     padding-left: 100px;
@@ -100,17 +102,18 @@ body {
     background-color: #00FFFF;
     border: none;
     border-radius: 5px;
-    color: purple;
+    color: black;
     transition: background-color 0.3s;
+    font-family: "Orbitron", sans-serif;
 }
 
 a:hover,
-#logbutton:hover,
-#regbutton:hover,
 #playButton:hover,
 #backbutton:hover,
-#restartButton:hover {
-    opacity: 0.6;
+#restartButton:hover,
+.knop1:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
 }
 
 
@@ -120,53 +123,6 @@ a:hover,
     color: white;
 }
 
-/* dit is voor de canvas dat Project Eve gebruikt*/
-#canvas {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-
-/* Dit is de tekst op de eerste inlog pagina*/
-#h1 {
-    color: purple;
-    text-align: center;
-    font-size: 30px;
-    margin-top: 350px;
-    animation: scale 1s;
-}
-
-/* dit is de div die wordt gebruikt  om de input field in het midden van de eerste inlog pagina te zetten*/
-#inlog2 {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 250px;
-    animation: scale 1s;
-}
-
-/* dit is de input field waar jij je naam invoert*/
-#name,
-#password {
-    width: 100%;
-    height: 100%;
-    padding: 4px;
-    background-color: black;
-    border-width: 3px solid #00FFFF;
-    border-color: #00FFFF;
-    color: white;
-    border-radius: 5px;
-}
-
-
-
-/* Deze tekst geeft aan of inloggen gelukt is wat eigenlijk altijd zo is */
-.h2 {
-    color: purple;
-    text-align: center;
-    font-size: 80px;
-    margin: 0px;
-}
 
 /* dit is de buttons die je ziet op de home pagina */
 #start {
@@ -192,6 +148,7 @@ a:hover,
     margin-bottom: 10px;
 }
 
+/* Dit is de foto die je ziet op de homepagina */
 #foto {
     width: 600px;
     height: 400px;
@@ -215,6 +172,7 @@ a:hover,
     padding-top: 20px;
     padding-bottom: 20px;
     margin-top: 20px;
+    font-family: "Orbitron", sans-serif;
 }
 
 /* dit is voor alle link*/
@@ -222,7 +180,6 @@ a {
     text-decoration: none;
     color: white;
 }
-
 
 
 /* Dit is de titel div voor de Project Eve bovenin*/
@@ -245,17 +202,6 @@ a {
     color: rgb(177, 1, 177)
 }
 
-/* Dit is voor de skip button die je ziet als je jezelf geen naam wilt geven */
-#skipbutton {
-    border-radius: 10px;
-    padding: 10px;
-    margin-left: 20px;
-    background-color: black;
-    border-style: none;
-    color: purple
-}
-
-
 /* Dit is voor de Project EVE die je ziet op het startscherm/restartscherm */
 #titlemenu {
     margin: 0px;
@@ -277,6 +223,12 @@ footer {
     animation-timeline: view();
     animation-range: entry 0;
 }
+
+#gameover {
+    font-size: 25px;
+    color: #00FFFF;
+}
+
 
 /* Dit is de animatie voor een element die links komt */
 @keyframes SlideinLeft {
