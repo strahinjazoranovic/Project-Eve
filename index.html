@@ -1,36 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Eve</title>
-    <link rel="icon" href="img/spaceshuttle.png" type="image/icon type">
-    <link rel="stylesheet" href="css/game.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-
-</head>
-
-<body>
-    <div id="homegradient">
-        <div id="title">
-            <h1 id="h4"><a href="" id="h3">PROJECT EVE</a></h1>
-        </div>
-        <div id="start1">
-            <div id="start">
-                <img src="img/game.png" id="foto">
-                <a href="game.html"><button class="knop1">PLAY GAME</button></a>
-                <a href="beta.html"><button class="knop1">PLAY DEVELOPER BETA V0.852</button></a>
-            </div>
-        </div>
+    <link
+      rel="icon"
+      href="assets/player/spaceshuttle.png"
+      type="image/icon type"
+    />
+    <link rel="stylesheet" href="css/game.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="notLaptop">
+      <h1 id="titlemenu">PROJECT EVE</h1>
+      <span
+        >Was not developed to work on phones or tablets<br />It is only playable
+        on an laptop or desktop.</span
+      >
     </div>
-
-    <footer>
-        <h1>©Strahinja Zoranovic 2025</h1>
-    </footer>
-</body>
-<script src="js/inlog.js"></script>
-
+    <div class="laptop">
+      <div id="start">
+        <h1 class="startHeader">PROJECT EVE</h1>
+        <img src="assets/game.png" id="foto" />
+        <a href="game.html"><button class="knop1">PLAY GAME</button></a>
+        <h1 class="highScore">Highscore:<span class="highScoreEl">0</span></h1>
+      </div>
+    </div>
+  </body>
+  <script>
+    const highScoreEl = document.querySelector(".highScoreEl");
+    let score = localStorage.getItem("highScore") || 0;
+    highScoreEl.textContent = score;
+  </script>
 </html>

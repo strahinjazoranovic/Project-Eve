@@ -1,584 +1,1212 @@
-// This is a stable version fo the game
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
-const scoreEl = document.querySelector('#scoreEl')
-const playMenu = document.getElementById('playMenu')
-const playButton = document.getElementById('playButton')
-const hit = new Audio('sounds/hitmarker.mp3') //This is the audio you hear when you hit an invader
-const healthup = new Audio('sounds/healthup.mp3') //dit is voor de healthup sound die je hoort als je healthup pakt
+// Disable context menu
+document.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+});
 
+const canvas = document.querySelector("canvas");
+const c = canvas.getContext("2d");
 
-// The canvas gets resized when the window gets resized
+// Canvas width and height is equal to current window width and height
 function resizeCanvas() {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 
-// The canvas gets resized when the window gets resized
-window.addEventListener('resize', resizeCanvas)
-resizeCanvas()
+// Resize the canvas whenever the window size changes
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
+// Scores
+const scoreEl = document.querySelector("#scoreEl");
+const lastScoreEl = document.querySelector("#lastScoreEl");
+const highScoreEl = document.querySelectorAll(".highScoreEl");
 
-// Player gets spawned here with all the properties
+// Menus
+const pauseMenu = document.querySelector(".pauseMenu");
+const playMenu = document.getElementById("playMenu");
+const restartMenu = document.getElementById("restartMenu");
+const beatMenu = document.getElementById("beatMenu");
+
+// Game over text
+const overNoteEl = document.querySelector(".overNoteEl");
+
+// Buttons
+const resumeButton = document.getElementById("resumeButton");
+const playButton = document.getElementById("playButton");
+
+// Death messages
+const deathMessages = {
+  enemies: [
+    "The invaders got you. Better luck next time.",
+    "They were stronger. You were... there.",
+    "You have been invaded.",
+    "You fought bravely. They fought better.",
+    "Looks like they weren't bluffing.",
+    "Your last stand has ended.",
+    "You picked the wrong fight.",
+    "They came. They saw. They vaporized you.",
+    "Enemy: 1. You: 0.",
+    "You have been uninvited from this galaxy.",
+  ],
+
+  meteor: [
+    "That meteor hit you hard, you okay?",
+    "You looked up at the wrong time.",
+    "The sky had other plans for you.",
+    "You have been promoted to an crater.",
+    "That meteor really came out of nowhere huh.",
+    "Incoming! ...Oh. Too late.",
+    "Space rocks: 1. You: 0.",
+    "That's gonna leave a crater.",
+    "You should've looked up instead of looking down!",
+    "Gravity sends its regards.",
+  ],
+};
+
+// Show a random death message from the arrays above
+function showDeathMessage(type) {
+  const messages = deathMessages[type];
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  overNoteEl.innerHTML = randomMessage;
+}
+
+// Default difficulty values for level 1 are defined here
+let difficulty = {
+  level: 1,
+  playerSpeed: 12,
+  invaderSpeed: 6,
+  meteorMinSpeed: 10,
+  meteorMaxSpeed: 20,
+  starSpeed: 8,
+
+  // All the values below here are in frames
+  invaderShootInterval: 90,
+  invaderSpawnMin: 250,
+  invaderSpawnMax: 500,
+  meteorSpawnMin: 500,
+  meteorSpawnMax: 800,
+};
+
+function updateDifficulty() {
+  // Every 10,000 score the game gets +1 level
+  // Level 16 is the maximum difficulty; level 17 remains at maximum difficulty until the game is beaten
+  difficulty.level = Math.min(16, Math.floor(score / 10000) + 1);
+
+  // Starts at 12 and reaches 16 at level 16
+  difficulty.playerSpeed = Math.min(16, 12 + (difficulty.level - 1) * (4 / 15));
+
+  // Starts at 6 and reaches 12 at level 16
+  difficulty.invaderSpeed = Math.min(12, 6 + (difficulty.level - 1) * (6 / 15));
+
+  // Starts at 90 frames and reaches 45 frames at level 16
+  difficulty.invaderShootInterval = Math.max(
+    45,
+    90 - (difficulty.level - 1) * 3,
+  );
+
+  // Starts at 8 and reaches 16 at level 16
+  difficulty.starSpeed = Math.min(16, 8 + (difficulty.level - 1) * (8 / 15));
+
+  // MinSpeed starts at 10 and reaches 18, MaxSpeed starts at 20 and reaches 28 at level 16
+  difficulty.meteorMinSpeed = Math.min(
+    18,
+    10 + (difficulty.level - 1) * (8 / 15),
+  );
+  difficulty.meteorMaxSpeed = Math.min(
+    28,
+    20 + (difficulty.level - 1) * (8 / 15),
+  );
+
+  // SpawnMin starts at 500 frames and reaches 250, SpawnMax starts at 800 frames and reaches 500 frames at level 16
+  difficulty.meteorSpawnMin = Math.max(
+    250,
+    500 - (difficulty.level - 1) * (250 / 15),
+  );
+  difficulty.meteorSpawnMax = Math.max(500, 800 - (difficulty.level - 1) * 20);
+
+  // SpawnMin starts at 400 frames and reaches 200 frames, SpawnMax starts at 600 frames and reaches 400 frames at level 16
+  difficulty.invaderSpawnMin = Math.max(
+    200,
+    400 - (difficulty.level - 1) * (200 / 15),
+  );
+  difficulty.invaderSpawnMax = Math.max(
+    400,
+    600 - (difficulty.level - 1) * (200 / 15),
+  );
+}
+
+// Show level in UI
+function showLevel() {
+  const currentLevel = difficulty.level;
+  const levelText = document.querySelectorAll(".levelText");
+  levelText.forEach((levelText) => {
+    levelText.innerHTML = currentLevel || 1;
+  });
+}
+
+// Player entity and its properties
 class Player {
-    constructor() {
-        this.velocity = {
-            x: 0,
-            y: 0
-        }
+  // Allow the health bar to be enabled or disabled when creating the player
+  constructor(showHealthBar = true) {
+    this.showHealthBar = showHealthBar;
+    this.velocity = {
+      x: 0,
+      y: 0,
+    };
 
-        this.rotation
-        this.opacity = 1;
-        this.health = 4; // This is the health of the player
-        this.maxHealth = 8; // This is the maximum health of the player
+    this.rotation = 0;
+    this.opacity = 1;
+    this.health = 4; // This is the starting health of the player
+    this.maxHealth = 8; // This is the maximum health of the player
 
-        const image = new Image()
-        image.src = './img/spaceshuttle.png'
-        image.onload = () => {
-            const scale = 0.09
-            this.image = image
-            this.width = image.width * scale
-            this.height = image.height * scale
-            this.position = {
-                x: canvas.clientWidth / 2 - this.width / 2,
-                y: canvas.clientHeight - this.height - 20
-            }
-        }
+    const image = new Image();
+    image.src = "./assets/player/spaceshuttle.png";
+
+    image.onload = () => {
+      const scale = 1;
+      this.image = image;
+      this.width = image.width * scale;
+      this.height = image.height * scale;
+      this.position = {
+        x: canvas.clientWidth / 2 - this.width / 2,
+        y: canvas.clientHeight - this.height - 20,
+      };
+    };
+  }
+
+  draw() {
+    c.save();
+    c.globalAlpha = this.opacity;
+    c.translate(
+      this.position.x + this.width / 2,
+      this.position.y + this.height / 2,
+    );
+    c.rotate(this.rotation);
+    c.drawImage(
+      this.image,
+      -this.width / 2,
+      -this.height / 2,
+      this.width,
+      this.height,
+    );
+    c.restore();
+  }
+
+  drawHealthBar() {
+    const barWidth = 220;
+    const barHeight = 40;
+    const barX = canvas.width - barWidth - 20;
+    const barY = 20;
+
+    // Calculate health percentage
+    const healthPercentage = this.health / this.maxHealth;
+
+    // Determine health bar color
+    let healthColor = "green";
+    if (healthPercentage <= 0.25) {
+      healthColor = "red";
+    } else if (healthPercentage <= 0.5) {
+      healthColor = "yellow";
     }
 
-    draw() {
-        c.save()
-        c.globalAlpha = this.opacity
-        c.translate(
-            this.position.x + this.width / 2,
-            this.position.y + this.height / 2
-        )
-        c.rotate(this.rotation)
-        c.drawImage(
-            this.image,
-            -this.width / 2,
-            -this.height / 2,
-            this.width,
-            this.height
-        )
-        c.restore()
+    // Draw the health bar background
+    c.fillStyle = "white";
+    c.fillRect(barX, barY, barWidth, barHeight);
+
+    // Draw the health bar foreground
+    c.fillStyle = healthColor;
+    c.fillRect(barX, barY, barWidth * healthPercentage, barHeight);
+
+    // Draw the health text
+    c.fillStyle = "black";
+    c.font = "20px Orbitron";
+    c.textAlign = "center";
+    c.fillText(
+      `${this.health} / ${this.maxHealth}`,
+      barX + barWidth / 2,
+      barY + barHeight / 1.5,
+    );
+  }
+
+  update() {
+    if (this.showHealthBar === true) {
+      this.drawHealthBar();
     }
 
-    drawHealthBar() {
-        const barWidth = 220
-        const barHeight = 40
-        const barX = canvas.width - barWidth - 20
-        const barY = 20
+    if (this.image) {
+      this.draw();
+      this.position.x += this.velocity.x;
 
-        // Calculate health percentage
-        const healthPercentage = this.health / this.maxHealth
-
-        // Determine health bar color
-        let healthColor = 'green'
-        if (healthPercentage <= 0.25) {
-            healthColor = 'red'
-        } else if (healthPercentage <= 0.5) {
-            healthColor = 'yellow'
-        }
-
-        // Draw the health bar background
-        c.fillStyle = 'gray'
-        c.fillRect(barX, barY, barWidth, barHeight)
-
-        // Draw the health bar foreground
-        c.fillStyle = healthColor
-        c.fillRect(barX, barY, barWidth * healthPercentage, barHeight)
-
-        // Draw the health text
-        c.fillStyle = 'black'
-        c.font = '19px Orbitron'
-        c.textAlign = 'center'
-        c.fillText(`${this.health} / ${this.maxHealth}`, barX + barWidth / 2, barY + barHeight / 1.5)
+      if (this.position.x < 0) this.position.x = 0;
+      if (this.position.x + this.width > canvas.clientWidth)
+        this.position.x = canvas.clientWidth - this.width;
     }
-
-    update() {
-        this.drawHealthBar()
-        if (this.image) {
-            this.draw()
-            this.position.x += this.velocity.x
-
-            if (this.position.x < 0) this.position.x = 0
-            if (this.position.x + this.width > canvas.clientWidth)
-                this.position.x = canvas.clientWidth - this.width
-        }
-    }
+  }
 }
 
-// Bullets gets spawned here with all the properties
+// Player projectile entity
 class Projectile {
-    constructor({ position, velocity }) {
-        this.position = position
-        this.velocity = velocity
+  constructor({ position, velocity }) {
+    this.position = position;
+    this.velocity = velocity;
 
-        this.radius = 5
-    }
+    this.radius = 6;
+  }
 
-    draw() {
-        c.beginPath()
-        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
-        c.fillStyle = 'red'
-        c.fill()
-        c.closePath()
+  draw() {
+    c.beginPath();
+    c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+    c.fillStyle = "purple";
+    c.fill();
+    c.closePath();
+  }
 
-    }
-
-    update() {
-        this.draw()
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
-    }
+  update() {
+    this.draw();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
 }
 
-
-// Stars for the background get spawned here with all the properties
+// Star system
 class Particle {
-    constructor({ position, velocity, radius, color, fades }) {
-        this.position = position
-        this.velocity = velocity
-        this.radius = radius
-        this.color = color
-        this.opacity = 1
-        this.fades = fades
-    }
+  constructor({ position, velocity, radius, color, fades }) {
+    this.position = position;
+    this.velocity = velocity;
+    this.radius = radius;
+    this.color = color;
+    this.opacity = 1;
+    this.fades = fades;
+  }
 
-    draw() {
-        c.save()
-        c.globalAlpha = this.opacity
-        c.beginPath()
-        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
-        c.fillStyle = this.color
-        c.fill()
-        c.closePath()
-        c.restore()
+  draw() {
+    c.save();
+    c.globalAlpha = this.opacity;
+    c.beginPath();
+    c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+    c.fillStyle = this.color;
+    c.fill();
+    c.closePath();
+    c.restore();
+  }
 
-    }
+  update() {
+    this.draw();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
 
-    update() {
-        this.draw()
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
-
-        if (this.fades) this.opacity -= 0.01
-    }
+    if (this.fades) this.opacity -= 0.01;
+  }
 }
 
-// Invader bullets get spawned here with all the properties
+// Invader projectile entity
 class InvaderProjectile {
-    constructor({ position, velocity }) {
-        this.position = position
-        this.velocity = velocity
-        this.width = 10
-        this.height = 20
+  constructor({ position, velocity }) {
+    this.position = position;
+    this.velocity = velocity;
+    this.width = 12;
+    this.height = 12;
+  }
 
-    }
+  draw() {
+    c.fillStyle = "red";
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+  }
 
-    draw() {
-        c.fillStyle = 'purple'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-
-    }
-
-    update() {
-        this.draw()
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
-    }
+  update() {
+    this.draw();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
 }
 
 // Invaders get spawned here with all the properties
 class Invader {
-    constructor({ position }) {
-        this.velocity = {
-            x: 0,
-            y: 0
-        }
+  constructor({ position }) {
+    this.position = {
+      x: position.x,
+      y: position.y,
+    };
 
-        const image = new Image()
-        image.src = './img/eindbaas.png'
-        image.onload = () => {
-            const scale = 0.22
-            this.image = image
-            this.width = image.width * scale
-            this.height = image.height * scale
-            this.position = {
-                x: position.x,
-                y: position.y
-            }
-        }
+    this.velocity = {
+      x: 0,
+      y: 0,
+    };
+
+    const image = new Image();
+    image.src = "./assets/invader/enemy1.png";
+    image.onload = () => {
+      const scale = 1;
+      this.image = image;
+      this.width = image.width * scale;
+      this.height = image.height * scale;
+      this.position = {
+        x: position.x,
+        y: position.y,
+      };
+    };
+  }
+
+  // Draw the invader
+  draw() {
+    if (this.image) {
+      c.drawImage(
+        this.image,
+        this.position.x,
+        this.position.y,
+        this.width,
+        this.height,
+      );
     }
+  }
 
-    // Draw the invader
-    draw() {
-
-
-        if (this.image) {
-            c.drawImage(
-                this.image,
-                this.position.x,
-                this.position.y,
-                this.width,
-                this.height
-            )
-        }
+  update({ velocity }) {
+    if (this.image) {
+      this.draw();
+      this.position.x += velocity.x;
+      this.position.y += velocity.y;
     }
+  }
 
-    update({ velocity }) {
-        if (this.image) {
-            this.draw()
-            this.position.x += velocity.x
-            this.position.y += velocity.y
-        }
-    }
+  shoot(invaderProjectiles) {
+    invaderProjectiles.push(
+      new InvaderProjectile({
+        position: {
+          x: this.position.x + this.width / 2,
+          y: this.position.y + this.height,
+        },
+        velocity: {
+          x: 0,
+          y: 16,
+        },
+      }),
+    );
 
-    shoot(invaderProjectiles) {
-        invaderProjectiles.push(
-            new InvaderProjectile({
-                position: {
-                    x: this.position.x + this.width / 2,
-                    y: this.position.y + this.height
-                },
-                velocity: {
-                    x: 0,
-                    y: 3.5
-                }
-            })
-        )
-    }
+    // Restart the shooting sound so rapid shots don't wait for the previous sound to finish
+    invaderShoot.currentTime = 0;
+    playSound(invaderShoot);
+  }
 }
 
 // Invader grids get spawned here with all the properties
 class Grid {
-    constructor() {
-        this.position = {
-            x: 0,
-            y: 0
-        }
+  constructor() {
+    const columns = Math.floor(Math.random() * 6 + 3);
+    const rows = 1;
+    this.width = columns * 110;
 
-        this.velocity = {
-            x: 2.8,
-            y: 0
-        }
+    this.position = {
+      x: Math.random() * (canvas.width - this.width),
+      y: 0,
+    };
 
-        this.invaders = []
+    this.velocity = {
+      x: difficulty.invaderSpeed,
+      y: 0,
+    };
 
-        const columns = Math.floor(Math.random() * 6 + 2)
-        const rows = Math.floor(Math.random() * 1 + 2)
-        this.width = columns * 110
-        for (let x = 0; x < columns; x++) {
-            for (let y = 0; y < rows; y++) {
-                this.invaders.push(new Invader({
-                    position: {
-                        x: x * 115,
-                        y: y * 105
-                    }
-                }))
-            }
-        }
+    this.invaders = [];
+    for (let x = 0; x < columns; x++) {
+      for (let y = 0; y < rows; y++) {
+        this.invaders.push(
+          new Invader({
+            position: {
+              x: this.position.x + x * 100,
+              y: this.position.y + y * 90,
+            },
+          }),
+        );
+      }
     }
-    update() {
-        this.position.x += this.velocity.x;
+  }
+  update() {
+    // Apply the current difficulty speed to the grid
+    this.velocity.x = Math.sign(this.velocity.x) * difficulty.invaderSpeed;
 
-        this.velocity.y = 0;
+    this.position.x += this.velocity.x;
 
-        if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
-            this.velocity.x = -this.velocity.x;
-            this.velocity.y = 20;
-        }
+    this.velocity.y = 0;
+
+    if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
+      this.velocity.x = -this.velocity.x;
+      this.velocity.y = 20;
     }
+  }
 }
 
-// All the variables get spawned here
-const player = new Player()
-const projectiles = []
-const grids = []
-const invaderProjectiles = []
-const particles = []
+class MeteorGrid {
+  constructor() {
+    this.position = {
+      x: Math.random() * canvas.width,
+      y: -150,
+    };
+
+    const columns = 1;
+    const rows = 1;
+
+    this.meteors = [];
+
+    for (let x = 0; x < columns; x++) {
+      for (let y = 0; y < rows; y++) {
+        this.meteors.push(
+          new Meteor({
+            position: {
+              x: this.position.x,
+              y: this.position.y,
+            },
+          }),
+        );
+      }
+    }
+
+    const targetX = player.position.x + player.width / 2;
+    const targetY = player.position.y + player.height / 2;
+
+    const dX = targetX - this.position.x;
+    const dY = targetY - this.position.y;
+
+    // Calculate a random meteor speed within the current difficulty range
+    const speed =
+      Math.random() * (difficulty.meteorMaxSpeed - difficulty.meteorMinSpeed) +
+      difficulty.meteorMinSpeed;
+
+    const distance = Math.sqrt(dX * dX + dY * dY);
+
+    this.velocity = {
+      x: (dX / distance) * speed,
+      y: (dY / distance) * speed,
+    };
+  }
+
+  update() {
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+
+    this.meteors.forEach((meteor) => {
+      meteor.position.x = this.position.x;
+      meteor.position.y = this.position.y;
+      meteor.update();
+    });
+  }
+}
+
+class Meteor {
+  constructor({ position }) {
+    this.position = position;
+    this.velocity = {
+      x: 0,
+      y: 0,
+    };
+
+    this.opacity = 1;
+    this.health = 3;
+
+    const image = new Image();
+    image.src = "./assets/meteor/meteor1.png";
+
+    image.onload = () => {
+      const scale = 1.5;
+
+      this.image = image;
+      this.width = image.width * scale;
+      this.height = image.height * scale;
+
+      this.position = {
+        x: position.x,
+        y: position.y,
+      };
+    };
+  }
+
+  draw() {
+    if (this.image) {
+      c.save();
+      c.globalAlpha = this.opacity;
+
+      c.drawImage(
+        this.image,
+        this.position.x,
+        this.position.y,
+        this.width,
+        this.height,
+      );
+
+      c.restore();
+    }
+  }
+
+  update() {
+    this.draw();
+  }
+}
+
+// create an instance from the player
+const player = new Player(true);
+
+const projectiles = [];
+const meteorGrids = [];
+const grids = [];
+const invaderProjectiles = [];
+const particles = [];
+
+// Track the current state of player movement and shooting keys
 const keys = {
-    a: {
-        pressed: false
-    },
-    d: {
-        pressed: false
-    },
-    space: {
-        pressed: false
-    }
-}
+  a: {
+    pressed: false,
+  },
+  d: {
+    pressed: false,
+  },
+};
 
-let frames = 0
-let randomInterval = Math.floor(Math.random() * 500 + 500)
+// Game states that are available
 let game = {
-    over: false,
-    active: true
+  over: false,
+  active: false,
+  beaten: false,
+};
+
+// Score needed to beat the game
+const beatGameScore = 160000;
+
+// Invader spawn interval using difficulty
+var invaderSpawnInterval = Math.floor(
+  Math.random() * (difficulty.invaderSpawnMax - difficulty.invaderSpawnMin) +
+    difficulty.invaderSpawnMin,
+);
+
+// Meteor spawn interval using difficulty
+let meteorSpawnInterval = Math.floor(
+  Math.random() * (difficulty.meteorSpawnMax - difficulty.meteorSpawnMin) +
+    difficulty.meteorSpawnMin,
+);
+
+// Frame counters used for timed spawning and enemy shooting
+let frames = 0;
+let meteorFrames = 0;
+let score = 0;
+
+// Values last and highScore from localStorage
+let lastScore = localStorage.getItem("lastScore") || 0;
+let highScore = localStorage.getItem("highScore") || 0;
+
+// For each element show highscore
+function lastScoreShow() {
+  lastScoreEl.innerHTML = lastScore;
 }
 
-let score = 0
+// For each element show highscor
+function highScoreShow() {
+  highScoreEl.forEach((element) => {
+    element.innerHTML = highScore;
+  });
+}
+highScoreShow();
 
-
-// This is for the stars you can see fly across the canvas
+// This for loop creates the star background
 for (let i = 0; i < 125; i++) {
-    particles.push(new Particle({
+  particles.push(
+    new Particle({
+      position: {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+      },
+
+      velocity: {
+        x: 0,
+        y: Math.random() * difficulty.starSpeed,
+      },
+      radius: Math.random() * 2.5,
+      color: "white",
+    }),
+  );
+}
+
+// This is the particle creator
+function createParticles({ object, color, fades }) {
+  for (let i = 0; i < 15; i++) {
+    particles.push(
+      new Particle({
         position: {
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
+          x: object.position.x + object.width / 2,
+          y: object.position.y + object.height / 2,
         },
 
         velocity: {
-            x: 0,
-            y: 2.6
+          x: (Math.random() - 0.5) * 1,
+          y: (Math.random() - 0.5) * 1,
         },
-        radius: Math.random() * 4.5,
-        color: 'white'
-    }))
+        radius: Math.random() * 4,
+        color: color || "white",
+        fades,
+      }),
+    );
+  }
 }
 
-// These are the particles that get spawned when you hit an invader or get hit by an invader
-function createParticles({ object, color, fades }) {
-    for (let i = 0; i < 15; i++) {
-        particles.push(new Particle({
-            position: {
-                x: object.position.x + object.width / 2,
-                y: object.position.y + object.height / 2
-            },
+// Here all the sounds for the player
+const hitPlayer = new Audio("sounds/player/hitPlayer.ogg"); // An hit from the player
+const playerNoise = new Audio("sounds/player/player.ogg"); // Player noise
+const playerShoot = new Audio("sounds/player/shootPlayer.ogg"); // Player shooting
+const healthup = new Audio("sounds/player/healthup.ogg"); // +1 heal point
+const defeated = new Audio("sounds/player/defeated.ogg"); // Game over
 
-            velocity: {
-                x: (Math.random() - 0.5) * 2,
-                y: (Math.random() - 0.5) * 2
-            },
-            radius: Math.random() * 6,
-            color: color || 'purple',
-            fades
-        }))
-    }
+// Here all the sounds for the invader
+const hitInvader = new Audio("sounds/invader/hitInvader.ogg"); // An hit from an invader
+const invaderNoise = new Audio("sounds/invader/invader.ogg"); // Invader noise
+const invaderShoot = new Audio("sounds/invader/shootInvader.ogg"); // Invader shooting
+
+// Here are all the sounds for the meteor
+const hitMeteor = new Audio("sounds/meteor/hit.ogg"); // An hit from the invader
+const meteorIncoming = new Audio("sounds/meteor/incoming.ogg"); // Meteor incoming
+
+//  all sounds that happen in the gameloop
+const sounds = [
+  hitPlayer,
+  playerNoise,
+  playerShoot,
+  hitInvader,
+  invaderNoise,
+  invaderShoot,
+  hitMeteor,
+  meteorIncoming,
+  healthup,
+  defeated,
+];
+
+//  player volume
+playerNoise.volume = 0.25;
+playerShoot.volume = 0.4;
+hitPlayer.volume = 0.2;
+healthup.volume = 0.75;
+defeated.volume = 0.6;
+
+//  invader volume
+invaderNoise.volume = 0.15;
+invaderShoot.volume = 0.25;
+hitInvader.volume = 0.4;
+
+//  meteor volume
+hitMeteor.volume = 0.45;
+meteorIncoming.volume = 0.75;
+
+// Ask if the game is active and only then play the audio but always play defeated
+function playSound(sound) {
+  if (!game.active && sound !== defeated) return;
+  sound.play().catch(() => {});
 }
 
-// This is the game loop
-function animate() {
-    if (!game.active) return
-    requestAnimationFrame(animate)
-    // If the game is over(when you die) then the restart menu will pop up and the music will stop
+// Loop through every sound available in the gameloop and stop it
+function stopAudio() {
+  sounds.forEach((sound) => {
+    sound.pause();
+    sound.currentTime = 0;
+  });
+}
+
+// Update the game audio based on game state
+function updateGameAudio() {
+  if (!game.active || game.beaten) {
+    playerNoise.pause();
+    invaderNoise.pause();
+  } else {
+    playerNoise.play();
+    invaderNoise.play();
+  }
+}
+
+// End the gameplay loop but wait 2 seconds before doing so to give the user an smooth transistion
+function gameOver() {
+  setTimeout(() => {
     if (game.over === true) {
-        document.getElementById('restartMenu').style.display = 'flex';
-        // muziek.pause(); // This is for the music in game which isn't used at the moment
+      restartMenu.style.display = "flex";
+      stopAudio();
     }
-    c.clearRect(0, 0, canvas.width, canvas.height)
-    player.update()
-    particles.forEach((particle, i) => {
-
-        if (particle.position.y - particle.radius >= canvas.height) {
-            particle.position.x = Math.random() * canvas.width
-            particle.position.y = -particle.radius
-        }
-        if (particle.opacity <= 0) {
-            setTimeout(() => {
-                particles.splice(i, 1)
-            }, 0);
-        } else {
-            particle.update()
-        }
-    })
-
-
-    invaderProjectiles.forEach((invaderProjectile, index) => {
-        if (
-            invaderProjectile.position.y + invaderProjectile.height >= canvas.height) {
-            setTimeout(() => {
-                invaderProjectiles.splice(index, 1)
-            }, 0)
-        } else {
-            invaderProjectile.update()
-        }
-
-        if (invaderProjectile.position.y + invaderProjectile.height >=
-            player.position.y &&
-            invaderProjectile.position.x + invaderProjectile.width
-            >= player.position.x &&
-            invaderProjectile.position.x <= player.position.x + player.width) {
-
-            // If the player gets hit by an invader projectile then remove the projectile and decrease the health of the player and create particles for damage
-            if (invaderProjectiles[index]) {
-                invaderProjectiles.splice(index, 1);
-                player.health--;
-                createParticles({
-                    object: player,
-                    color: 'red',
-                    fades: true
-                });
-
-                // Remove the player if health is 0
-                if (player.health <= 0) {
-                    player.opacity = 0;
-                    game.over = true;
-                    createParticles({
-                        object: player,
-                        color: 'orange',
-                        fades: true
-                    });
-                }
-            }
-        }
-    })
-
-
-
-    projectiles.forEach((projectile, index) => {
-        if (projectile.position.y + projectile.radius <= 0) {
-            setTimeout(() => {
-                projectiles.splice(index, 1)
-            }, 0)
-        } else {
-            projectile.update()
-        }
-    })
-
-    // Invader shootmechanics
-    grids.forEach((grid, gridIndex) => {
-        grid.update()
-        if (frames % 300 === 0 && grid.invaders.length > 0) {
-            grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
-        }
-        grid.invaders.forEach((invader, i) => {
-            invader.update({ velocity: grid.velocity })
-
-            // Invader hitbox
-            projectiles.forEach((projectile, j) => {
-                if (projectile.position.y - projectile.radius <=
-                    invader.position.y + invader.height &&
-                    projectile.position.x + projectile.radius >=
-                    invader.position.x &&
-                    projectile.position.x - projectile.radius <=
-                    invader.position.x + invader.width &&
-                    projectile.position.y + projectile.radius >= invader.position.y
-                ) {
-                    setTimeout(() => {
-                        const invaderFound = grid.invaders.find((invader2) => invader2 === invader);
-                        const projectileFound = projectiles.find(
-                            projectile2 => projectile2 === projectile
-                        );
-
-                        if (invaderFound && projectileFound) {
-                            grid.invaders.splice(i, 1); // Remove the invaders when hit
-                            hit.play(); //This is the sound you hear when you hit an invader
-
-                            createParticles({ //Make the particles when a invader is hit
-                                object: invader,
-                                fades: true
-                            });
-
-                            if (grid.invaders.splice(i, 1)) { // If an invader is removed add score and health if score is 5000 or 10000
-                                score += 100;
-                                scoreEl.innerHTML = score;
-
-                                // Check if score is a multiple of 5000
-                                if (score % 5000 === 0) {
-                                    healthup.play();
-                                    player.health++;
-                                    if (player.health > player.maxHealth) {
-                                        player.health = player.maxHealth; // Ensure health does not exceed max health
-                                    }
-                                }
-
-                                // Check if score is a multiple of 10000
-                                if (score % 10000 === 0) {
-                                    healthup.play();
-                                    player.health++;
-                                    if (player.health > player.maxHealth) {
-                                        player.health = player.maxHealth; // Ensure health does not exceed max health
-                                    }
-                                }
-                            }
-
-                            projectiles.splice(j, 1); // Remove the projectile
-
-                            if (grid.invaders.length > 0) {
-                                const firstInvader = grid.invaders[0];
-                                const lastInvader = grid.invaders[grid.invaders.length - 1];
-
-                                grid.width = lastInvader.position.x + lastInvader.width - firstInvader.position.x;
-                                grid.position.x = firstInvader.position.x;
-                            } else {
-                                grids.splice(gridIndex, 1); // Remove grid if no invaders are left
-                            }
-                        }
-                    }, 0);
-                }
-            })
-        })
-    })
-
-    if (keys.a.pressed && player.position.x >= 0) { // This is for the spaceshuttle to move around when you hit A or D on your keyboard
-        player.velocity.x = -6 // This is the speed of the spaceshuttle
-        player.rotation = -0.20 // This is the rotation of the spaceshuttle
-    } else if (keys.d.pressed && player.position.x + player.width <= canvas.width) { // This is so that the spaceshuttle does not go off the screen
-        player.velocity.x = 6
-        player.rotation = 0.20
-    } else {
-        player.velocity.x = 0
-        player.rotation = 0
-    }
-
-    // spawning new enemies with grids
-    if (frames % randomInterval === 0) {
-        grids.push(new Grid())
-        randomInterval = Math.floor(Math.random() * 500 + 200) // Change the spawn rate of the enemies
-        frames = 0
-    }
-
-    frames++
+    return;
+  }, 2000);
 }
 
-// Add variables for cooldown
-let lastShotTime = 0;
-const shootCooldown = 80; // Cooldown period in milliseconds for shooting
+// End the gameplay loop for an beaten game
+function gameBeaten() {
+  setTimeout(() => {
+    if (game.beaten === true) {
+      beatMenu.style.display = "flex";
+    }
+    return;
+  }, 2000);
+}
+
+// This is the gameplay loop
+function animate() {
+  if (!game.active) return;
+  requestAnimationFrame(animate);
+
+  // If the game is over call the function that ends the gameplay
+  if (game.over) {
+    gameOver();
+  }
+
+  // If the score is equal to the score needed to beat the game stop spawing invaders and meteor and set game.beaten to true
+  if (score >= beatGameScore) {
+    grids.length = 0;
+    meteorGrids.length = 0;
+    game.beaten = true;
+    gameBeaten();
+    stopAudio();
+  }
+
+  // Call audio update
+  updateGameAudio();
+
+  // Every 10000 score increase the level by 1
+  const newLevel = Math.floor(score / 10000) + 1;
+
+  // Check if new level went up and if it did call 2 functions
+  if (newLevel !== difficulty.level) {
+    updateDifficulty();
+    showLevel();
+  }
+
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  player.update();
+  particles.forEach((particle, i) => {
+    if (particle.position.y - particle.radius >= canvas.height) {
+      particle.position.x = Math.random() * canvas.width;
+      particle.position.y = -particle.radius;
+    }
+    if (particle.opacity <= 0) {
+      setTimeout(() => {
+        particles.splice(i, 1);
+      }, 0);
+    } else {
+      particle.update();
+    }
+  });
+
+  // Player hitbox
+  invaderProjectiles.forEach((invaderProjectile, index) => {
+    if (
+      invaderProjectile.position.y + invaderProjectile.height >=
+      canvas.height
+    ) {
+      setTimeout(() => {
+        invaderProjectiles.splice(index, 1);
+      }, 0);
+    } else {
+      invaderProjectile.update();
+    }
+
+    if (
+      invaderProjectile.position.y + invaderProjectile.height >=
+        player.position.y &&
+      invaderProjectile.position.x + invaderProjectile.width >=
+        player.position.x &&
+      invaderProjectile.position.x <= player.position.x + player.width
+    ) {
+      // If the player gets hit by an invader projectile then remove the projectile and decrease the health of the player and create particles for damage
+      if (invaderProjectiles[index]) {
+        invaderProjectiles.splice(index, 1);
+        player.health--;
+        createParticles({
+          object: player,
+          color: "lightBlue",
+          fades: true,
+        });
+
+        // Restart the hit sound so rapid hits don't wait for the previous sound to finish
+        hitInvader.currentTime = 0;
+        playSound(hitInvader);
+
+        // Remove the player if health is equal or less than 0
+        if (player.health <= 0) {
+          // Hide the player as there is no hp left
+          player.opacity = 0;
+
+          // Set game over to true
+          game.over = true;
+
+          // Set drawhealthbar to false to avoid showing possible negative values in the health bar
+          player.showHealthBar = false;
+
+          // Play defeated sound
+          playSound(defeated);
+
+          // Show death messages for invader
+          showDeathMessage("enemies");
+
+          // Set an timeout else the game will freeze the moment the player is defeated
+          setTimeout(() => {
+            game.active = false;
+          }, 2100);
+
+          lastScore = score;
+          localStorage.setItem("lastScore", lastScore);
+          lastScoreShow();
+
+          // Save the score if it is higher than the current saved highScore so it can get used as highScore
+          if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+
+            // Show for every element
+            highScoreEl.forEach((element) => {
+              element.innerHTML = score;
+            });
+          }
+
+          createParticles({
+            object: player,
+            color: "orange",
+            fades: true,
+          });
+        }
+      }
+    }
+  });
+
+  // Update each meteorGrid
+  meteorGrids.forEach((meteorGrid, meteorGridIndex) => {
+    meteorGrid.update();
+
+    meteorGrid.meteors.forEach((meteor) => {
+      // Meteor hitbox against player
+      if (
+        meteor.position.x + meteor.width >= player.position.x &&
+        meteor.position.x <= player.position.x + player.width &&
+        meteor.position.y + meteor.height >= player.position.y &&
+        meteor.position.y <= player.position.y + player.height
+      ) {
+        // Remove meteor when it hits the player
+        meteorGrids.splice(meteorGridIndex, 1);
+
+        // Hit the player with 3 damage
+        player.health -= 3; // This damage output is quite high could be lowered in future versions
+
+        createParticles({
+          object: player,
+          color: "orange",
+          fades: true,
+        });
+
+        // Play meteor hit sound
+        hitMeteor.currentTime = 0;
+        playSound(hitMeteor);
+
+        if (player.health <= 0) {
+          player.opacity = 0;
+          game.over = true;
+          player.showHealthBar = false;
+
+          setTimeout(() => {
+            game.active = false;
+          }, 2100);
+
+          showDeathMessage("meteor");
+          playSound(defeated);
+
+          lastScore = score;
+          localStorage.setItem("lastScore", lastScore);
+          lastScoreShow();
+
+          if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+
+            highScoreEl.forEach((element) => {
+              element.innerHTML = score;
+            });
+          }
+
+          createParticles({
+            object: player,
+            color: "orange",
+            fades: true,
+          });
+        }
+      }
+
+      // Projectile vs meteor hitbox
+      projectiles.forEach((projectile, projectileIndex) => {
+        if (
+          projectile.position.x + projectile.radius >= meteor.position.x &&
+          projectile.position.x - projectile.radius <=
+            meteor.position.x + meteor.width &&
+          projectile.position.y + projectile.radius >= meteor.position.y &&
+          projectile.position.y - projectile.radius <=
+            meteor.position.y + meteor.height
+        ) {
+          // Remove projectile
+          projectiles.splice(projectileIndex, 1);
+
+          // Damage meteor
+          meteor.health--;
+
+          // Hit particles
+          createParticles({
+            object: meteor,
+            fades: true,
+            color: "orange",
+          });
+
+          // Play meteor hit sound
+          hitMeteor.currentTime = 0;
+          playSound(hitMeteor);
+
+          // Only destroy meteor when health reaches 0
+          if (meteor.health <= 0) {
+            meteorGrids.splice(meteorGridIndex, 1);
+
+            // Award points for destroying meteor
+            score += 750;
+            scoreEl.innerHTML = score;
+
+            // Every 5000 score increase health
+            if (score % 5000 === 0 && player.health < player.maxHealth) {
+              player.health = Math.min(player.health + 1, player.maxHealth);
+              playSound(healthup);
+            }
+          }
+        }
+      });
+    });
+  });
+
+  projectiles.forEach((projectile, index) => {
+    if (projectile.position.y + projectile.radius <= 0) {
+      setTimeout(() => {
+        projectiles.splice(index, 1);
+      }, 0);
+    } else {
+      projectile.update();
+    }
+  });
+
+  // Invader shooting mechanics
+  grids.forEach((grid, gridIndex) => {
+    grid.update();
+
+    // Shoot a projectile at the interval defined by the current difficulty
+    if (
+      frames % difficulty.invaderShootInterval === 0 &&
+      grid.invaders.length > 0
+    ) {
+      grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(
+        invaderProjectiles,
+      );
+    }
+    grid.invaders.forEach((invader, i) => {
+      invader.update({ velocity: grid.velocity });
+
+      // Invader hitbox
+      projectiles.forEach((projectile, j) => {
+        if (
+          projectile.position.y - projectile.radius <=
+            invader.position.y + invader.height &&
+          projectile.position.x + projectile.radius >= invader.position.x &&
+          projectile.position.x - projectile.radius <=
+            invader.position.x + invader.width &&
+          projectile.position.y + projectile.radius >= invader.position.y
+        ) {
+          setTimeout(() => {
+            const invaderFound = grid.invaders.find(
+              (invader2) => invader2 === invader,
+            );
+            const projectileFound = projectiles.find(
+              (projectile2) => projectile2 === projectile,
+            );
+
+            if (invaderFound && projectileFound && grid.invaders.splice(i, 1)) {
+              createParticles({
+                object: invader,
+                fades: true,
+              });
+
+              // Restart the hit sound so rqapid hits don't wait for the previous sound to finish
+              hitPlayer.currentTime = 0;
+              playSound(hitPlayer);
+
+              // Award 250 points for hitting an invader and update the score display
+              score += 250;
+              scoreEl.innerHTML = score;
+
+              // Every 5000 score increase health
+              if (score % 5000 === 0 && player.health < player.maxHealth) {
+                // Take the minimum so it can't exceed 8hp which is the max health
+                player.health = Math.min(player.health + 1, player.maxHealth);
+                playSound(healthup);
+              }
+
+              projectiles.splice(j, 1); // Remove the projectile
+
+              if (grid.invaders.length > 0) {
+                const firstInvader = grid.invaders[0];
+                const lastInvader = grid.invaders[grid.invaders.length - 1];
+
+                grid.width =
+                  lastInvader.position.x +
+                  lastInvader.width -
+                  firstInvader.position.x;
+                grid.position.x = firstInvader.position.x;
+              } else {
+                grids.splice(gridIndex, 1); // Remove grid if no invaders are left
+              }
+            }
+          }, 0);
+        }
+      });
+    });
+  });
+
+  // Keybinds for the player
+
+  // If the game is beaten don't let the player move
+  if (game.beaten) {
+    player.velocity.x = 0;
+    player.rotation = 0;
+  } else if (keys.a.pressed && player.position.x >= 0) {
+    player.velocity.x = -difficulty.playerSpeed;
+    player.rotation = -0.4;
+  } else if (
+    keys.d.pressed &&
+    player.position.x + player.width <= canvas.width
+  ) {
+    player.velocity.x = difficulty.playerSpeed;
+    player.rotation = 0.4;
+  } else {
+    player.velocity.x = 0;
+    player.rotation = 0;
+  }
+
+  // Spawn an grid of invaders
+  if (frames % invaderSpawnInterval === 0 && game.beaten === false) {
+    grids.push(new Grid());
+    invaderSpawnInterval = Math.floor(
+      Math.random() *
+        (difficulty.invaderSpawnMax - difficulty.invaderSpawnMin) +
+        difficulty.invaderSpawnMin,
+    );
+    frames = 0;
+  }
+
+  // If grids array is empty push an new grid to keep atleast 1 grid on the canvas
+  if (grids.length === 0 && game.beaten === false) {
+    grids.push(new Grid());
+  }
+
+  // Spawn meteor
+  if (meteorFrames >= meteorSpawnInterval && game.beaten === false) {
+    meteorGrids.push(new MeteorGrid());
+
+    // Play meteor incoming sound
+    playSound(meteorIncoming);
+
+    meteorSpawnInterval = Math.floor(
+      Math.random() * (difficulty.meteorSpawnMax - difficulty.meteorSpawnMin) +
+        difficulty.meteorSpawnMin,
+    );
+
+    meteorFrames = 0;
+  }
+
+  frames++;
+  meteorFrames++;
+}
 
 // If you click play the game will start
-playButton.addEventListener('click', () => {
-    playMenu.style.display = 'none'  // Hide the play menu
-    game.active = true  // Set game to active
-    animate()  // Start the game loop
-})
+playButton.addEventListener("click", () => {
+  playMenu.style.display = "none";
+  game.active = true;
+  animate(); // Start the gameplay loop
+});
 
-// These are the controls for the game
-addEventListener('keydown', ({ key }) => {
-    if (game.over) return
-    switch (key) {
-        case 'a':
-            keys.a.pressed = true
-            break
-        case 'd':
-            keys.d.pressed = true
-            break
-        case ' ': // This is for the spacebar to shoot
-            const currentTime = Date.now();
-            if (currentTime - lastShotTime >= shootCooldown) {
-                projectiles.push(new Projectile({
-                    position: {
-                        x: player.position.x + player.width / 2,
-                        y: player.position.y
-                    },
-                    velocity: {
-                        x: 0,
-                        y: -8
-                    }
-                }))
-                lastShotTime = currentTime; // Update the last shot time
-            }
-            break
-    }
-})
+// If you click resume on the pauseMenu it will resume the game
+resumeButton.addEventListener("click", () => {
+  pauseMenu.style.display = "none";
+  game.active = true;
+  animate(); // Start the gameplay loop
+});
 
-addEventListener('keyup', ({ key }) => {
-    switch (key) {
-        case 'a':
-            keys.a.pressed = false
-            break
-        case 'd':
-            keys.d.pressed = false
-            break
-    }
-})
+// Bind lastShotTime to 0
+let lastShotTime = 0;
+const shootCooldown = 40; // Cooldown period in milliseconds for shooting
+
+// These are the keybinds for the game
+addEventListener("keydown", ({ key }) => {
+  // If the game is over return nothing
+  if (game.over || game.beaten) return;
+
+  // If the player is not spawned in yet retur nothing
+  if (!player.image && !player.position) return;
+
+  switch (key) {
+    case "a":
+      keys.a.pressed = true;
+      break;
+    case "d":
+      keys.d.pressed = true;
+      break;
+    case " ": // This is for the spacebar to shoot
+      // If the player class does not exist yet return nothing
+      if (!player.image && !player.position) return;
+
+      //  current time
+      const currentTime = Date.now();
+
+      // Playershoot mechanics that takes into account the shootCoolDown d above
+      if (currentTime - lastShotTime >= shootCooldown) {
+        projectiles.push(
+          new Projectile({
+            position: {
+              x: player.position.x + player.width / 2,
+              y: player.position.y - 8,
+            },
+            velocity: {
+              x: 0,
+              y: -16,
+            },
+          }),
+        );
+        lastShotTime = currentTime; // Update the last shot time
+
+        // Restart the shooting sound so rapid shots don't wait for the previous sound to finish
+        playerShoot.currentTime = 0;
+        playSound(playerShoot);
+      }
+      break;
+    case "Escape":
+      // Switch between true and false status for the game
+      game.active = !game.active;
+
+      // Stop all audio
+      stopAudio();
+
+      // If the pauseMenu is already in flex hide the menu
+      if (pauseMenu.style.display === "flex") {
+        pauseMenu.style.display = "none";
+
+        // Call the animate function to unpause the game
+        animate();
+        // If the pauseMenu is not shown show it but only if playMenu and restart menu aren't shown on screen
+      } else if (
+        // Use getComputedStyle() to display their actual display state else this statement would return null for their display style
+        getComputedStyle(playMenu).display === "none" &&
+        getComputedStyle(restartMenu).display === "none"
+      ) {
+        pauseMenu.style.display = "flex";
+      }
+
+      break;
+  }
+});
+
+// When the player releases an key set it to false
+addEventListener("keyup", ({ key }) => {
+  switch (key) {
+    case "a":
+      keys.a.pressed = false;
+      break;
+    case "d":
+      keys.d.pressed = false;
+      break;
+  }
+});

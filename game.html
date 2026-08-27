@@ -1,54 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Eve</title>
-    <link rel="icon" href="img/spaceshuttle.png" type="image/icon type">
-    <link rel="stylesheet" href="css/game.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link
+      rel="icon"
+      href="assets/player/spaceshuttle.png"
+      type="image/icon type"
+    />
+    <link rel="stylesheet" href="css/game.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-</head>
-
-<body>
-    <div>
-        <div id="gamebuttons">
-            <p
-                style="position: fixed; z-index: 10; color: white; left: 210px; top: 15px; margin: 0; font-size: 20px; font-family: Orbitron;">
-                <span>Score:</span><span id="scoreEl">0</span>
-            </p>
-
-            <p
-                style="position: fixed; z-index: 10; color: white; left: 25px; top: 15px; margin: 0; font-size: 20px; font-family: Orbitron;">
-                <a href="index.html"><span>PROJECT EVE</span></a>
-            </p>
-
-        </div>
-
-        <div id="canvas">
-            <canvas></canvas>
-        </div>
-
-        <div id="playMenu">
-            <h1 id="titlemenu">PROJECT EVE</h1>
-            <h1 id="controls"> A to move left<br> D to move right <br>
-                Space To Shoot!<br></h1>
-            <h1 id="controls">Project EVE BETA to go back home!</h1>
-            <button id="playButton">Play</button>
-            <a href="index.html"><button id="backbutton">Home</button></a>
-        </div>
-
-        <div id="restartMenu">
-            <h1 id="titlemenu">PROJECT EVE</h1>
-            <h1 id="gameover">GAME OVER</h1>
-            <a href="beta.html"><button id="restartButton">Restart</button></a>
-            <a href="index.html"><button id="backbutton">Home</button></a>
-        </div>
+  <body>
+    <div class="notLaptop">
+      <h1 id="titlemenu">PROJECT EVE</h1>
+      <span
+        >Was not developed to work on phones or tablets<br />It is only playable
+        on an laptop or desktop.</span
+      >
     </div>
-</body>
-<script src="js/game.js"></script>
+    <div class="laptop">
+      <div class="gameOverlay">
+        <div id="gameInfo">
+          <p class="gameText"><span>Score:</span><span id="scoreEl">0</span></p>
+          <p class="gameText">
+            <span>Highscore:</span><span class="highScoreEl">0</span>
+          </p>
+          <p class="gameText">
+            <span>Level: </span><span class="levelText">1</span>
+          </p>
+        </div>
+      </div>
 
+      <div id="canvas">
+        <canvas></canvas>
+      </div>
+
+      <div id="playMenu">
+        <h1 id="titlemenu">PROJECT EVE</h1>
+        <h1 id="controls">
+          A to move left<br />
+          D to move right <br />
+          Space To Shoot!<br />
+        </h1>
+        <h2 id="controlsh2">Press esc to pause the game!</h2>
+        <h2 id="controlsh2">If the game is too small use crtl - to zoom out</h2>
+        <div class="containerButtons">
+          <button id="playButton">Play</button>
+          <a href="index.html"><button id="backbutton">Go back</button></a>
+        </div>
+      </div>
+
+      <div class="pauseMenu">
+        <h1>GAME PAUSED</h1>
+        <div class="containerButtons">
+          <button id="resumeButton">Resume</button>
+          <a href="game.html"><button id="restartButton">Restart</button></a>
+          <a href="index.html"><button id="backbutton">Go home</button></a>
+        </div>
+      </div>
+
+      <div id="restartMenu">
+        <h1>GAME OVER</h1>
+        <span class="overNoteEl"
+          >That message failed. The invaders and meteors didn't.</span
+        >
+        <h3>Highscore:<span class="highScoreEl">0</span></h3>
+        <h3>Score:<span id="lastScoreEl">0</span></h3>
+        <h3>Level:<span class="levelText">1</span></h3>
+        <div class="containerButtons">
+          <a href="game.html"><button id="restartButton">Restart</button></a>
+          <a href="index.html"><button id="backbutton">Home</button></a>
+        </div>
+      </div>
+
+      <div id="beatMenu">
+        <h1>GAME BEATEN</h1>
+        <span
+          >You actually did it. You beat Project EVE.<br />
+          But was this really the end? It seems like it<br /><br
+        /></span>
+        <span id="controls"
+          >Thank you for playing! <br />
+          Developed by Strahinja Zoranovic</span
+        >
+        <div class="containerButtons">
+          <a href="index.html"
+            ><button id="backbutton">Return to home</button></a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="js/game.js"></script>
 </html>
