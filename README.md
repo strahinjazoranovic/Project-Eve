@@ -70,39 +70,6 @@ Project Eve is a single-player game where you control a spaceship to combat wave
 6. **Pause and Manage:** Press the 'Esc' key at any time to pause the game. From the pause menu, you can resume the game, restart the current session, or go back to the main menu.
 7. **Achieve Victory:** Strive to reach the target score (160,000) to beat the game. 
 
-## Project Structure
-
-```
-Project-Eve/
-├── assets/
-│   ├── game.png
-│   └── player/
-│       └── spaceshuttle.png
-├── css/
-│   └── game.css
-├── js/
-│   └── game.js
-├── sounds/
-│   ├── invader/
-│   │   ├── hitInvader.ogg
-│   │   ├── invader.ogg
-│   │   └── shootInvader.ogg
-│   ├── meteor/
-│   │   ├── hit.ogg
-│   │   └── incoming.ogg
-│   └── player/
-│       ├── defeated.ogg
-│       ├── healthup.ogg
-│       ├── hitPlayer.ogg
-│       ├── player.ogg
-│       └── shootPlayer.ogg
-├── index.html
-├── game.html
-├── README.md
-├── assets/license.txt
-└── sounds/License.txt
-```
-
 ## Developer
 
 Developed by [strahinjazoranovic](https://github.com/strahinjazoranovic).
