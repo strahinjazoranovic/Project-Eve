@@ -9,8 +9,8 @@ Project Eve is a classic 2D arcade-style spaceship shooter game. Players control
 ## Features
 
 - **Engaging Gameplay:** Classic space shooter mechanics with intuitive controls.
-- **Dynamic Difficulty:** The game gets progressively harder as your score increases, introducing faster enemies and more challenging patterns.
-- **Scoring System:** Earn points by shooting down invaders and surviving longer.
+- **Dynamic Difficulty:** The game gets progressively harder as your score increases. Introducing faster enemies, faster shooting enemies and meteors.
+- **Scoring System:** Earn points by shooting down invaders and meteors.
 - **Responsive Design:** While primarily designed for larger screens, it includes a message for smaller devices.
 - **Immersive Audio:** Sound effects for player actions, enemy interactions, and game events enhance the experience.
 - **Visual Effects:** Particle effects for explosions and movement add to the visual appeal.
