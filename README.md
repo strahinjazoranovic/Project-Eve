@@ -1,6 +1,6 @@
 <img width="1024" alt="Project Eve" src="/assets/game.png">
 
-A simple 2D Spaceshooter game developed with JavaScript, HTML, and CSS.
+Arcade style spaceshooter in 2D
 
 ## Description
 
