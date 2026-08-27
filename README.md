@@ -11,9 +11,9 @@ Project Eve is a classic 2D arcade-style spaceship shooter game. Players control
 - **Engaging Gameplay:** Classic space shooter mechanics with intuitive controls.
 - **Dynamic Difficulty:** The game gets progressively harder as your score increases. Introducing faster enemies, faster shooting enemies and meteors.
 - **Scoring System:** Earn points by shooting down invaders and meteors.
-- **Responsive Design:** While primarily designed for larger screens, it includes a message for smaller devices.
+- **Responsive Design:** While primarily designed for larger screens, it includes a message for smaller devices that it is not available.
 - **Immersive Audio:** Sound effects for player actions, enemy interactions, and game events enhance the experience.
-- **Visual Effects:** Particle effects for explosions and movement add to the visual appeal.
+- **Visual Effects:** Particle effects for explosions.
 
 ## Tech Stack 
 
@@ -54,7 +54,7 @@ Project Eve is a single-player game where you control a spaceship to combat wave
 - **Start Menu:** Upon opening `index.html`, you'll see the game title, an image, and a "PLAY GAME" button. The high score is displayed here.
 - **Game Screen:** After clicking "PLAY GAME", you are taken to `game.html`. The game canvas will load with your spaceship, score, high score, and level display.
 - **Gameplay:** Use the controls to move and shoot. Invaders will appear in grids and attempt to shoot you. Asteroids will also fall from the sky.
-- **Difficulty:** The game's difficulty increases with your score. Higher levels mean faster enemies and more projectiles.
+- **Difficulty:** The game's difficulty increases with your score. Higher levels mean faster enemies, faster meteors and more projectiles.
 - **Health:** Your spaceship has a health bar. Getting hit by enemy projectiles or asteroids reduces your health.
 - **Game Over:** If your health reaches zero, the game ends. Your score is displayed, and you can choose to restart or return to the home page. Your high score is updated if your current score is higher.
 - **Game Beaten:** If you reach a score of 160,000, you beat the game. A congratulatory message is displayed.
@@ -65,7 +65,7 @@ Project Eve is a single-player game where you control a spaceship to combat wave
 1. **Access the Game:** Navigate to the root directory of the cloned repository in your file explorer and double-click on `index.html`. This will open the game's starting screen in your default web browser.
 2. **Start Playing:** Click the "PLAY GAME" button on the start screen. This will load the main game interface.
 3. **Control Your Ship:** Use the 'A' and 'D' keys to move your spaceship left and right, respectively. Use the spacebar to fire your weapon.
-4. **Survive and Score:** Aim to destroy incoming alien invaders and avoid colliding with them or their projectiles. Dodge falling asteroids as well.
+4. **Survive and Score:** Aim to destroy incoming alien invaders and avoid colliding with meteors.
 5. **Monitor Your Progress:** Keep an eye on your current score, the high score, and the current level displayed at the top of the game screen.
 6. **Pause and Manage:** Press the 'Esc' key at any time to pause the game. From the pause menu, you can resume the game, restart the current session, or go back to the main menu.
 7. **Achieve Victory:** Strive to reach the target score (160,000) to beat the game. 
