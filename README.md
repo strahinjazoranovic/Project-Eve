@@ -15,7 +15,12 @@ Project Eve is a classic 2D arcade-style spaceship shooter game. Players control
 - **Immersive Audio:** Sound effects for player actions, enemy interactions, and game events enhance the experience.
 - **Visual Effects:** Particle effects for explosions.
 
-## Tech Stack 
+## Known issues
+
+1. **Invader disapearing:** When the browser window is resized while the invaders are positioned near the edge of the canvas, they can move downward beyond the playable area and disappear behind the player. This is especially an issue since new invaders won't get spawned(meaning canvas will look empty to the user) and also the player can stil get hit and damaged by these "invisible" invaders
+2. **Gameplay loop tied to user FPS:** The game's simulation speed becomes dependent on the user's FPS. At refresh rates above 60 FPS, movement and gameplay may run disproportionately fast, while at lower frame rates such as 30 FPS, gameplay may become disproportionately slow. This can lead to inconsistent gameplay across different hardware and display refresh rates.
+
+## Tech Stack
 
 - **Language:** JavaScript
 - **Markup:** HTML
@@ -36,7 +41,7 @@ This project is a client-side web application and does not require a complex ins
 3. **Open `index.html`:**
    Open the `index.html` file in your preferred web browser.
 
-*No external dependencies or build tools are required to run the game.* 
+_No external dependencies or build tools are required to run the game._
 
 ## Usage
 
@@ -68,7 +73,7 @@ Project Eve is a single-player game where you control a spaceship to combat wave
 4. **Survive and Score:** Aim to destroy incoming alien invaders and avoid colliding with meteors.
 5. **Monitor Your Progress:** Keep an eye on your current score, the high score, and the current level displayed at the top of the game screen.
 6. **Pause and Manage:** Press the 'Esc' key at any time to pause the game. From the pause menu, you can resume the game, restart the current session, or go back to the main menu.
-7. **Achieve Victory:** Strive to reach the target score (160,000) to beat the game. 
+7. **Achieve Victory:** Strive to reach the target score (160,000) to beat the game.
 
 ## Developer
 

@@ -89,7 +89,7 @@ let difficulty = {
 
 function updateDifficulty() {
   // Every 10,000 score the game gets +1 level
-  // Level 16 is the maximum difficulty; level 17 remains at maximum difficulty until the game is beaten
+  // Level 16 is the maximum difficulty
   difficulty.level = Math.min(16, Math.floor(score / 10000) + 1);
 
   // Starts at 12 and reaches 16 at level 16
@@ -250,13 +250,13 @@ class Projectile {
     this.position = position;
     this.velocity = velocity;
 
-    this.radius = 6;
+    this.radius = 5;
   }
 
   draw() {
     c.beginPath();
     c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
-    c.fillStyle = "purple";
+    c.fillStyle = "lightBlue"; // Color of the player shooting
     c.fill();
     c.closePath();
   }
@@ -295,6 +295,7 @@ class Particle {
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
 
+    // Fade method
     if (this.fades) this.opacity -= 0.01;
   }
 }
@@ -304,8 +305,8 @@ class InvaderProjectile {
   constructor({ position, velocity }) {
     this.position = position;
     this.velocity = velocity;
-    this.width = 12;
-    this.height = 12;
+    this.width = 11;
+    this.height = 11;
   }
 
   draw() {
@@ -391,7 +392,7 @@ class Invader {
 // Invader grids get spawned here with all the properties
 class Grid {
   constructor() {
-    const columns = Math.floor(Math.random() * 6 + 3);
+    const columns = Math.floor(Math.random() * 5 + 4);
     const rows = 1;
     this.width = columns * 110;
 
@@ -420,7 +421,7 @@ class Grid {
     }
   }
   update() {
-    // Apply the current difficulty speed to the grid
+    // Apply the difficulty speed to the grid
     this.velocity.x = Math.sign(this.velocity.x) * difficulty.invaderSpeed;
 
     this.position.x += this.velocity.x;
@@ -429,7 +430,7 @@ class Grid {
 
     if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
       this.velocity.x = -this.velocity.x;
-      this.velocity.y = 20;
+      this.velocity.y = 10;
     }
   }
 }
@@ -437,7 +438,7 @@ class Grid {
 class MeteorGrid {
   constructor() {
     this.position = {
-      x: Math.random() * canvas.width,
+      x: Math.random() * canvas.width, // Randomize the spawn position using math.random times canvas.width
       y: -150,
     };
 
@@ -465,7 +466,7 @@ class MeteorGrid {
     const dX = targetX - this.position.x;
     const dY = targetY - this.position.y;
 
-    // Calculate a random meteor speed within the current difficulty range
+    // Calculate a random meteor speed within the difficulty range
     const speed =
       Math.random() * (difficulty.meteorMaxSpeed - difficulty.meteorMinSpeed) +
       difficulty.meteorMinSpeed;
@@ -499,13 +500,13 @@ class Meteor {
     };
 
     this.opacity = 1;
-    this.health = 3;
+    this.health = 4; // Starting health for the meteor
 
     const image = new Image();
     image.src = "./assets/meteor/meteor1.png";
 
     image.onload = () => {
-      const scale = 1.5;
+      const scale = 1.4;
 
       this.image = image;
       this.width = image.width * scale;
@@ -540,14 +541,64 @@ class Meteor {
   }
 }
 
-// create an instance from the player
+// create an instance from the player class
 const player = new Player(true);
 
+// Player projectiles
 const projectiles = [];
+
+// meteorGrids
 const meteorGrids = [];
+
+// Invader grid
 const grids = [];
+
+// Invader projectiles
 const invaderProjectiles = [];
+
+// Particles used for stars
 const particles = [];
+
+// This for loop creates the star background
+for (let i = 0; i < 125; i++) {
+  particles.push(
+    new Particle({
+      position: {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+      },
+
+      velocity: {
+        x: 0,
+        y: Math.random() * difficulty.starSpeed,
+      },
+      radius: Math.random() * 3, // Size of the stars
+      color: "white", // Color of the starts
+    }),
+  );
+}
+
+// This is the particle creator
+function createParticles({ object, color, fades }) {
+  for (let i = 0; i < 15; i++) {
+    particles.push(
+      new Particle({
+        position: {
+          x: object.position.x + object.width / 2,
+          y: object.position.y + object.height / 2,
+        },
+
+        velocity: {
+          x: (Math.random() - 0.5) * 2,
+          y: (Math.random() - 0.5) * 2,
+        },
+        radius: Math.random() * 4, // Size of the particles
+        color: color || "white", // Defined color or default white
+        fades,
+      }),
+    );
+  }
+}
 
 // Track the current state of player movement and shooting keys
 const keys = {
@@ -559,7 +610,7 @@ const keys = {
   },
 };
 
-// Game states that are available
+// Game states
 let game = {
   over: false,
   active: false,
@@ -584,6 +635,8 @@ let meteorSpawnInterval = Math.floor(
 // Frame counters used for timed spawning and enemy shooting
 let frames = 0;
 let meteorFrames = 0;
+
+// Set score to 0 when starting the gameplay loop
 let score = 0;
 
 // Values last and highScore from localStorage
@@ -603,47 +656,6 @@ function highScoreShow() {
 }
 highScoreShow();
 
-// This for loop creates the star background
-for (let i = 0; i < 125; i++) {
-  particles.push(
-    new Particle({
-      position: {
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-      },
-
-      velocity: {
-        x: 0,
-        y: Math.random() * difficulty.starSpeed,
-      },
-      radius: Math.random() * 2.5,
-      color: "white",
-    }),
-  );
-}
-
-// This is the particle creator
-function createParticles({ object, color, fades }) {
-  for (let i = 0; i < 15; i++) {
-    particles.push(
-      new Particle({
-        position: {
-          x: object.position.x + object.width / 2,
-          y: object.position.y + object.height / 2,
-        },
-
-        velocity: {
-          x: (Math.random() - 0.5) * 1,
-          y: (Math.random() - 0.5) * 1,
-        },
-        radius: Math.random() * 4,
-        color: color || "white",
-        fades,
-      }),
-    );
-  }
-}
-
 // Here all the sounds for the player
 const hitPlayer = new Audio("sounds/player/hitPlayer.ogg"); // An hit from the player
 const playerNoise = new Audio("sounds/player/player.ogg"); // Player noise
@@ -660,7 +672,7 @@ const invaderShoot = new Audio("sounds/invader/shootInvader.ogg"); // Invader sh
 const hitMeteor = new Audio("sounds/meteor/hit.ogg"); // An hit from the invader
 const meteorIncoming = new Audio("sounds/meteor/incoming.ogg"); // Meteor incoming
 
-//  all sounds that happen in the gameloop
+// All sounds that happen in the gameloop
 const sounds = [
   hitPlayer,
   playerNoise,
@@ -674,19 +686,19 @@ const sounds = [
   defeated,
 ];
 
-//  player volume
+// Player volume
 playerNoise.volume = 0.25;
 playerShoot.volume = 0.4;
 hitPlayer.volume = 0.2;
 healthup.volume = 0.75;
 defeated.volume = 0.6;
 
-//  invader volume
+// Invader volume
 invaderNoise.volume = 0.15;
 invaderShoot.volume = 0.25;
 hitInvader.volume = 0.4;
 
-//  meteor volume
+// Meteor volume
 hitMeteor.volume = 0.45;
 meteorIncoming.volume = 0.75;
 
@@ -741,12 +753,12 @@ function animate() {
   if (!game.active) return;
   requestAnimationFrame(animate);
 
-  // If the game is over call the function that ends the gameplay
+  // If the game is over call the function that ends the gameplay and if not return
   if (game.over) {
     gameOver();
   }
 
-  // If the score is equal to the score needed to beat the game stop spawing invaders and meteor and set game.beaten to true
+  // If the score is equal to the score needed to beat the game remove invaders and meteor and set game.beaten to true and stopAudio
   if (score >= beatGameScore) {
     grids.length = 0;
     meteorGrids.length = 0;
@@ -806,7 +818,7 @@ function animate() {
       // If the player gets hit by an invader projectile then remove the projectile and decrease the health of the player and create particles for damage
       if (invaderProjectiles[index]) {
         invaderProjectiles.splice(index, 1);
-        player.health--;
+        player.health--; // 1 Damage
         createParticles({
           object: player,
           color: "lightBlue",
@@ -819,19 +831,13 @@ function animate() {
 
         // Remove the player if health is equal or less than 0
         if (player.health <= 0) {
-          // Hide the player as there is no hp left
           player.opacity = 0;
-
-          // Set game over to true
           game.over = true;
 
           // Set drawhealthbar to false to avoid showing possible negative values in the health bar
           player.showHealthBar = false;
 
-          // Play defeated sound
           playSound(defeated);
-
-          // Show death messages for invader
           showDeathMessage("enemies");
 
           // Set an timeout else the game will freeze the moment the player is defeated
@@ -854,9 +860,10 @@ function animate() {
             });
           }
 
+          // Create the final death particles on the player from the invaders
           createParticles({
             object: player,
-            color: "orange",
+            color: "lightBlue",
             fades: true,
           });
         }
@@ -880,23 +887,28 @@ function animate() {
         meteorGrids.splice(meteorGridIndex, 1);
 
         // Hit the player with 3 damage
-        player.health -= 3; // This damage output is quite high could be lowered in future versions
+        player.health -= 3; // This damage output is quite high and could be lowered in future versions
 
+        // Create particle effects on the player
         createParticles({
           object: player,
           color: "orange",
           fades: true,
         });
 
-        // Play meteor hit sound
+        // Restart the hit sound so rapid hits don't wait for the previous sound to finish
         hitMeteor.currentTime = 0;
         playSound(hitMeteor);
 
+        // Remove the player if health is equal or less than 0
         if (player.health <= 0) {
           player.opacity = 0;
           game.over = true;
+
+          // Set drawhealthbar to false to avoid showing possible negative values in the health bar
           player.showHealthBar = false;
 
+          // Set an timeout else the game will freeze the moment the player is defeated
           setTimeout(() => {
             game.active = false;
           }, 2100);
@@ -908,15 +920,18 @@ function animate() {
           localStorage.setItem("lastScore", lastScore);
           lastScoreShow();
 
+          // Save the score if it is higher than the current saved highScore so it can get used as highScore
           if (score > highScore) {
             highScore = score;
             localStorage.setItem("highScore", highScore);
 
+            // Show for every element
             highScoreEl.forEach((element) => {
               element.innerHTML = score;
             });
           }
 
+          // Create the final death particles on the player from the meteor
           createParticles({
             object: player,
             color: "orange",
@@ -939,7 +954,7 @@ function animate() {
           projectiles.splice(projectileIndex, 1);
 
           // Damage meteor
-          meteor.health--;
+          meteor.health--; // 1 Damage
 
           // Hit particles
           createParticles({
@@ -948,19 +963,20 @@ function animate() {
             color: "orange",
           });
 
-          // Play meteor hit sound
+          // Restart the meteor hit sound so rapid hits don't wait for the previous sound to finish
           hitMeteor.currentTime = 0;
           playSound(hitMeteor);
 
           // Only destroy meteor when health reaches 0
           if (meteor.health <= 0) {
+            // Remove the meteor from the canvas
             meteorGrids.splice(meteorGridIndex, 1);
 
-            // Award points for destroying meteor
+            // Award 750 points for destroying an meteor and update the score display
             score += 750;
             scoreEl.innerHTML = score;
 
-            // Every 5000 score increase health
+            // Every 5000 score increase health by +1
             if (score % 5000 === 0 && player.health < player.maxHealth) {
               player.health = Math.min(player.health + 1, player.maxHealth);
               playSound(healthup);
@@ -971,6 +987,7 @@ function animate() {
     });
   });
 
+  // For each projectile check if it is above the screen then remove it in index order if not then update it
   projectiles.forEach((projectile, index) => {
     if (projectile.position.y + projectile.radius <= 0) {
       setTimeout(() => {
@@ -985,7 +1002,7 @@ function animate() {
   grids.forEach((grid, gridIndex) => {
     grid.update();
 
-    // Shoot a projectile at the interval defined by the current difficulty
+    // Shoot a projectile at the interval defined by the difficulty
     if (
       frames % difficulty.invaderShootInterval === 0 &&
       grid.invaders.length > 0
@@ -994,6 +1011,7 @@ function animate() {
         invaderProjectiles,
       );
     }
+    // Update the grid for each invader
     grid.invaders.forEach((invader, i) => {
       invader.update({ velocity: grid.velocity });
 
@@ -1015,13 +1033,14 @@ function animate() {
               (projectile2) => projectile2 === projectile,
             );
 
+            // If the invaderFound and projectileFound remove the indexed invader from the canvas and create particles for it
             if (invaderFound && projectileFound && grid.invaders.splice(i, 1)) {
               createParticles({
                 object: invader,
                 fades: true,
               });
 
-              // Restart the hit sound so rqapid hits don't wait for the previous sound to finish
+              // Restart the hit sound so rapid hits don't wait for the previous sound to finish
               hitPlayer.currentTime = 0;
               playSound(hitPlayer);
 
@@ -1029,7 +1048,7 @@ function animate() {
               score += 250;
               scoreEl.innerHTML = score;
 
-              // Every 5000 score increase health
+              // Every 5000 score increase health by +1
               if (score % 5000 === 0 && player.health < player.maxHealth) {
                 // Take the minimum so it can't exceed 8hp which is the max health
                 player.health = Math.min(player.health + 1, player.maxHealth);
@@ -1038,6 +1057,7 @@ function animate() {
 
               projectiles.splice(j, 1); // Remove the projectile
 
+              // If the grid with invaders is less than 0
               if (grid.invaders.length > 0) {
                 const firstInvader = grid.invaders[0];
                 const lastInvader = grid.invaders[grid.invaders.length - 1];
@@ -1048,7 +1068,7 @@ function animate() {
                   firstInvader.position.x;
                 grid.position.x = firstInvader.position.x;
               } else {
-                grids.splice(gridIndex, 1); // Remove grid if no invaders are left
+                grids.splice(gridIndex, 1); // Remove the indexed grid if no invaders are left in it
               }
             }
           }, 0);
@@ -1088,13 +1108,13 @@ function animate() {
     frames = 0;
   }
 
-  // If grids array is empty push an new grid to keep atleast 1 grid on the canvas
-  if (grids.length === 0 && game.beaten === false) {
+  // If grids array is empty and the game isn't beaten push an new grid to keep atleast 1 grid on the canvas at all times
+  if (grids.length === 0 && !game.beaten) {
     grids.push(new Grid());
   }
 
   // Spawn meteor
-  if (meteorFrames >= meteorSpawnInterval && game.beaten === false) {
+  if (meteorFrames >= meteorSpawnInterval && !game.beaten) {
     meteorGrids.push(new MeteorGrid());
 
     // Play meteor incoming sound
@@ -1132,12 +1152,18 @@ const shootCooldown = 40; // Cooldown period in milliseconds for shooting
 
 // These are the keybinds for the game
 addEventListener("keydown", ({ key }) => {
-  // If the game is over return nothing
-  if (game.over || game.beaten) return;
+  // If the game is over, beaten, not active and no player.image/position.position
+  if (
+    game.over ||
+    game.beaten ||
+    !game.active ||
+    (!player.image && !player.position)
+  ) {
+    // Then return nothing
+    return;
+  }
 
-  // If the player is not spawned in yet retur nothing
-  if (!player.image && !player.position) return;
-
+  // Keybinds
   switch (key) {
     case "a":
       keys.a.pressed = true;
@@ -1146,23 +1172,20 @@ addEventListener("keydown", ({ key }) => {
       keys.d.pressed = true;
       break;
     case " ": // This is for the spacebar to shoot
-      // If the player class does not exist yet return nothing
-      if (!player.image && !player.position) return;
-
-      //  current time
+      // Current time
       const currentTime = Date.now();
 
-      // Playershoot mechanics that takes into account the shootCoolDown d above
+      // Playershoot mechanics that takes into account the shootCoolDown seen above the eventListener
       if (currentTime - lastShotTime >= shootCooldown) {
         projectiles.push(
           new Projectile({
             position: {
               x: player.position.x + player.width / 2,
-              y: player.position.y - 8,
+              y: player.position.y - 8, // Slighty offset from the player model
             },
             velocity: {
               x: 0,
-              y: -16,
+              y: -16, // Speed at which the projetile travels at
             },
           }),
         );
@@ -1188,10 +1211,11 @@ addEventListener("keydown", ({ key }) => {
         animate();
         // If the pauseMenu is not shown show it but only if playMenu and restart menu aren't shown on screen
       } else if (
-        // Use getComputedStyle() to display their actual display state else this statement would return null for their display style
+        // Use getComputedStyle() to display their actual display state without this statement it would return null for their display style and thus fail
         getComputedStyle(playMenu).display === "none" &&
         getComputedStyle(restartMenu).display === "none"
       ) {
+        // Set pauseMenu to flex if the statements above are true
         pauseMenu.style.display = "flex";
       }
 
