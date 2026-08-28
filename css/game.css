@@ -88,6 +88,17 @@ p {
   transition: all 0.3s ease;
 }
 
+#beatButton {
+  width: 550px;
+  padding: 16px;
+  font-size: 40px;
+  font-family: "Orbitron", sans-serif;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
 #playButton {
   background-color: #00ffff;
   color: purple;

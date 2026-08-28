@@ -18,7 +18,6 @@ Project Eve is a classic 2D arcade-style spaceship shooter game. Players control
 ## Known issues
 
 1. **Invader disapearing:** When the browser window is resized while the invaders are positioned near the edge of the canvas, they can move downward beyond the playable area and disappear behind the player. This is especially an issue since new invaders won't get spawned(meaning canvas will look empty to the user) and also the player can stil get hit and damaged by these "invisible" invaders
-2. **Gameplay loop tied to user FPS:** The game's simulation speed becomes dependent on the user's FPS. At refresh rates above 60 FPS, movement and gameplay may run disproportionately fast, while at lower frame rates such as 30 FPS, gameplay may become disproportionately slow. This can lead to inconsistent gameplay across different hardware and display refresh rates.
 
 ## Tech Stack
 

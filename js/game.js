@@ -1,7 +1,7 @@
-// Disable context menu
-document.addEventListener("contextmenu", (event) => {
-  event.preventDefault();
-});
+// // Disable context menu
+// document.addEventListener("contextmenu", (event) => {
+//   event.preventDefault();
+// });
 
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
@@ -79,12 +79,12 @@ let difficulty = {
   meteorMaxSpeed: 20,
   starSpeed: 8,
 
-  // All the values below here are in frames
-  invaderShootInterval: 90,
-  invaderSpawnMin: 250,
-  invaderSpawnMax: 500,
-  meteorSpawnMin: 500,
-  meteorSpawnMax: 800,
+  // All the values below here are in miliseconds
+  invaderShootInterval: 1500,
+  invaderSpawnMin: 4167,
+  invaderSpawnMax: 8333,
+  meteorSpawnMin: 8333,
+  meteorSpawnMax: 13333,
 };
 
 function updateDifficulty() {
@@ -98,40 +98,35 @@ function updateDifficulty() {
   // Starts at 6 and reaches 12 at level 16
   difficulty.invaderSpeed = Math.min(12, 6 + (difficulty.level - 1) * (6 / 15));
 
-  // Starts at 90 frames and reaches 45 frames at level 16
+  // Starts at 1500 miliseconds and reaches 750 miliseconds at level 16
   difficulty.invaderShootInterval = Math.max(
-    45,
-    90 - (difficulty.level - 1) * 3,
+    750,
+    1500 - (difficulty.level - 1) * 50,
   );
 
   // Starts at 8 and reaches 16 at level 16
   difficulty.starSpeed = Math.min(16, 8 + (difficulty.level - 1) * (8 / 15));
 
-  // MinSpeed starts at 10 and reaches 18, MaxSpeed starts at 20 and reaches 28 at level 16
-  difficulty.meteorMinSpeed = Math.min(
-    18,
-    10 + (difficulty.level - 1) * (8 / 15),
-  );
-  difficulty.meteorMaxSpeed = Math.min(
-    28,
-    20 + (difficulty.level - 1) * (8 / 15),
-  );
-
-  // SpawnMin starts at 500 frames and reaches 250, SpawnMax starts at 800 frames and reaches 500 frames at level 16
+  // MinSpeed starts at 8333 and reaches 4167, MaxSpeed starts at 13333 and reaches 8333 at level 16
   difficulty.meteorSpawnMin = Math.max(
-    250,
-    500 - (difficulty.level - 1) * (250 / 15),
+    4167,
+    8333 - (difficulty.level - 1) * (4166 / 15),
   );
-  difficulty.meteorSpawnMax = Math.max(500, 800 - (difficulty.level - 1) * 20);
 
-  // SpawnMin starts at 400 frames and reaches 200 frames, SpawnMax starts at 600 frames and reaches 400 frames at level 16
-  difficulty.invaderSpawnMin = Math.max(
-    200,
-    400 - (difficulty.level - 1) * (200 / 15),
+  difficulty.meteorSpawnMax = Math.max(
+    8333,
+    13333 - (difficulty.level - 1) * 333,
   );
+
+  // SpawnMin starts at 6667 miliseconds and 3333 reaches miliseconds, SpawnMax starts at 10000 miliseconds and reaches 6667 miliseconds at level 16
+  difficulty.invaderSpawnMin = Math.max(
+    3333,
+    6667 - (difficulty.level - 1) * (3334 / 15),
+  );
+
   difficulty.invaderSpawnMax = Math.max(
-    400,
-    600 - (difficulty.level - 1) * (200 / 15),
+    6667,
+    10000 - (difficulty.level - 1) * (3334 / 15),
   );
 }
 
@@ -235,7 +230,7 @@ class Player {
 
     if (this.image) {
       this.draw();
-      this.position.x += this.velocity.x;
+      this.position.x += this.velocity.x * frameScale;
 
       if (this.position.x < 0) this.position.x = 0;
       if (this.position.x + this.width > canvas.clientWidth)
@@ -263,8 +258,8 @@ class Projectile {
 
   update() {
     this.draw();
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x * frameScale;
+    this.position.y += this.velocity.y * frameScale;
   }
 }
 
@@ -292,11 +287,11 @@ class Particle {
 
   update() {
     this.draw();
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x * frameScale;
+    this.position.y += this.velocity.y * frameScale;
 
     // Fade method
-    if (this.fades) this.opacity -= 0.01;
+    if (this.fades) this.opacity -= 0.01 * frameScale;
   }
 }
 
@@ -316,8 +311,8 @@ class InvaderProjectile {
 
   update() {
     this.draw();
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x * frameScale;
+    this.position.y += this.velocity.y * frameScale;
   }
 }
 
@@ -364,8 +359,8 @@ class Invader {
   update({ velocity }) {
     if (this.image) {
       this.draw();
-      this.position.x += velocity.x;
-      this.position.y += velocity.y;
+      this.position.x += velocity.x * frameScale;
+      this.position.y += velocity.y * frameScale;
     }
   }
 
@@ -395,6 +390,7 @@ class Grid {
     const columns = Math.floor(Math.random() * 5 + 4);
     const rows = 1;
     this.width = columns * 110;
+    this.shootTimer = 0;
 
     this.position = {
       x: Math.random() * (canvas.width - this.width),
@@ -424,7 +420,7 @@ class Grid {
     // Apply the difficulty speed to the grid
     this.velocity.x = Math.sign(this.velocity.x) * difficulty.invaderSpeed;
 
-    this.position.x += this.velocity.x;
+    this.position.x += this.velocity.x * frameScale;
 
     this.velocity.y = 0;
 
@@ -432,6 +428,8 @@ class Grid {
       this.velocity.x = -this.velocity.x;
       this.velocity.y = 10;
     }
+
+    this.shootTimer += deltaTime;
   }
 }
 
@@ -480,8 +478,8 @@ class MeteorGrid {
   }
 
   update() {
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x * frameScale;
+    this.position.y += this.velocity.y * frameScale;
 
     this.meteors.forEach((meteor) => {
       meteor.position.x = this.position.x;
@@ -632,9 +630,11 @@ let meteorSpawnInterval = Math.floor(
     difficulty.meteorSpawnMin,
 );
 
-// Frame counters used for timed spawning and enemy shooting
-let frames = 0;
-let meteorFrames = 0;
+// Timers for invader and meteor spawning
+let invaderSpawnTimer = 0;
+let meteorSpawnTimer = 0;
+
+let deltaTime = 0;
 
 // Set score to 0 when starting the gameplay loop
 let score = 0;
@@ -748,10 +748,24 @@ function gameBeaten() {
   }, 2000);
 }
 
+let lastTime = 0;
+let frameScale = 1;
+
+// Target in frames per second
+const targetFps = 60;
+const frameTime = 1000 / targetFps;
+
 // This is the gameplay loop
-function animate() {
+function animate(timestamp) {
   if (!game.active) return;
   requestAnimationFrame(animate);
+
+  if (!lastTime) lastTime = timestamp;
+
+  deltaTime = Math.min(timestamp - lastTime, 100);
+  lastTime = timestamp;
+
+  frameScale = deltaTime / frameTime;
 
   // If the game is over call the function that ends the gameplay and if not return
   if (game.over) {
@@ -1004,12 +1018,14 @@ function animate() {
 
     // Shoot a projectile at the interval defined by the difficulty
     if (
-      frames % difficulty.invaderShootInterval === 0 &&
+      grid.shootTimer >= difficulty.invaderShootInterval &&
       grid.invaders.length > 0
     ) {
       grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(
         invaderProjectiles,
       );
+
+      grid.shootTimer = 0;
     }
     // Update the grid for each invader
     grid.invaders.forEach((invader, i) => {
@@ -1098,23 +1114,25 @@ function animate() {
   }
 
   // Spawn an grid of invaders
-  if (frames % invaderSpawnInterval === 0 && game.beaten === false) {
+  if (invaderSpawnTimer >= invaderSpawnInterval && game.beaten === false) {
     grids.push(new Grid());
     invaderSpawnInterval = Math.floor(
       Math.random() *
         (difficulty.invaderSpawnMax - difficulty.invaderSpawnMin) +
         difficulty.invaderSpawnMin,
     );
-    frames = 0;
+
+    invaderSpawnTimer = 0;
   }
 
   // If grids array is empty and the game isn't beaten push an new grid to keep atleast 1 grid on the canvas at all times
   if (grids.length === 0 && !game.beaten) {
     grids.push(new Grid());
+    invaderSpawnTimer = 0;
   }
 
   // Spawn meteor
-  if (meteorFrames >= meteorSpawnInterval && !game.beaten) {
+  if (meteorSpawnTimer >= meteorSpawnInterval && !game.beaten) {
     meteorGrids.push(new MeteorGrid());
 
     // Play meteor incoming sound
@@ -1125,25 +1143,27 @@ function animate() {
         difficulty.meteorSpawnMin,
     );
 
-    meteorFrames = 0;
+    meteorSpawnTimer = 0;
   }
 
-  frames++;
-  meteorFrames++;
+  invaderSpawnTimer += deltaTime;
+  meteorSpawnTimer += deltaTime;
 }
 
 // If you click play the game will start
 playButton.addEventListener("click", () => {
   playMenu.style.display = "none";
   game.active = true;
-  animate(); // Start the gameplay loop
+  lastTime = 0;
+  requestAnimationFrame(animate); // Start the gameplay loop
 });
 
 // If you click resume on the pauseMenu it will resume the game
 resumeButton.addEventListener("click", () => {
   pauseMenu.style.display = "none";
   game.active = true;
-  animate(); // Start the gameplay loop
+  lastTime = 0;
+  requestAnimationFrame(animate); // Start the gameplay loop
 });
 
 // Bind lastShotTime to 0
@@ -1152,6 +1172,31 @@ const shootCooldown = 40; // Cooldown period in milliseconds for shooting
 
 // These are the keybinds for the game
 addEventListener("keydown", ({ key }) => {
+  // Define escape above as this needs to run even if the game is active
+  if (key === "Escape") {
+    // Switch between true and false status for the game
+    game.active = !game.active;
+
+    // Stop all audio
+    stopAudio();
+
+    // If the pauseMenu is already in flex hide the menu
+    if (pauseMenu.style.display === "flex") {
+      pauseMenu.style.display = "none";
+
+      // Call the animate function to unpause the game
+      requestAnimationFrame(animate);
+      // If the pauseMenu is not shown show it but only if playMenu and restart menu aren't shown on screen
+    } else if (
+      // Use getComputedStyle() to display their actual display state without this statement it would return null for their display style and thus fail
+      getComputedStyle(playMenu).display === "none" &&
+      getComputedStyle(restartMenu).display === "none"
+    ) {
+      // Set pauseMenu to flex if the statements above are true
+      pauseMenu.style.display = "flex";
+    }
+  }
+
   // If the game is over, beaten, not active and no player.image/position.position
   if (
     game.over ||
@@ -1195,30 +1240,6 @@ addEventListener("keydown", ({ key }) => {
         playerShoot.currentTime = 0;
         playSound(playerShoot);
       }
-      break;
-    case "Escape":
-      // Switch between true and false status for the game
-      game.active = !game.active;
-
-      // Stop all audio
-      stopAudio();
-
-      // If the pauseMenu is already in flex hide the menu
-      if (pauseMenu.style.display === "flex") {
-        pauseMenu.style.display = "none";
-
-        // Call the animate function to unpause the game
-        animate();
-        // If the pauseMenu is not shown show it but only if playMenu and restart menu aren't shown on screen
-      } else if (
-        // Use getComputedStyle() to display their actual display state without this statement it would return null for their display style and thus fail
-        getComputedStyle(playMenu).display === "none" &&
-        getComputedStyle(restartMenu).display === "none"
-      ) {
-        // Set pauseMenu to flex if the statements above are true
-        pauseMenu.style.display = "flex";
-      }
-
       break;
   }
 });
