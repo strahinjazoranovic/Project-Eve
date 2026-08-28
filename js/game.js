@@ -1,7 +1,7 @@
-// // Disable context menu
-// document.addEventListener("contextmenu", (event) => {
-//   event.preventDefault();
-// });
+// Disable context menu
+document.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+});
 
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
@@ -190,14 +190,20 @@ class Player {
   drawHealthBar() {
     const barWidth = 220;
     const barHeight = 40;
+    const barBorderRadius = 12;
+
     const barX = canvas.width - barWidth - 20;
     const barY = 20;
 
     // Calculate health percentage
-    const healthPercentage = this.health / this.maxHealth;
+    const healthPercentage = Math.max(
+      0,
+      Math.min(1, this.health / this.maxHealth),
+    );
 
     // Determine health bar color
     let healthColor = "green";
+
     if (healthPercentage <= 0.25) {
       healthColor = "red";
     } else if (healthPercentage <= 0.5) {
@@ -206,20 +212,32 @@ class Player {
 
     // Draw the health bar background
     c.fillStyle = "white";
-    c.fillRect(barX, barY, barWidth, barHeight);
+    c.beginPath();
+    c.roundRect(barX, barY, barWidth, barHeight, barBorderRadius);
+    c.fill();
 
     // Draw the health bar foreground
     c.fillStyle = healthColor;
-    c.fillRect(barX, barY, barWidth * healthPercentage, barHeight);
+    c.beginPath();
+    c.roundRect(
+      barX,
+      barY,
+      barWidth * healthPercentage,
+      barHeight,
+      barBorderRadius,
+    );
+    c.fill();
 
     // Draw the health text
     c.fillStyle = "black";
     c.font = "20px Orbitron";
     c.textAlign = "center";
+    c.textBaseline = "middle";
+
     c.fillText(
       `${this.health} / ${this.maxHealth}`,
       barX + barWidth / 2,
-      barY + barHeight / 1.5,
+      barY + barHeight / 2,
     );
   }
 
@@ -616,7 +634,7 @@ let game = {
 };
 
 // Score needed to beat the game
-const beatGameScore = 160000;
+const beatGameScore = 1600;
 
 // Invader spawn interval using difficulty
 var invaderSpawnInterval = Math.floor(

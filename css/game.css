@@ -66,9 +66,7 @@ p {
 
 #beatMenu {
   display: none;
-  background: rgba(0, 0, 0, 0.2);
   font-size: 38px;
-  border: 2px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   text-align: center;
   animation: scale 1s;
@@ -80,22 +78,24 @@ p {
 #backbutton {
   width: 250px;
   padding: 16px;
-  font-size: 40px;
+  font-size: 30px;
   font-family: "Orbitron", sans-serif;
   cursor: pointer;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
-#beatButton {
+#beatbutton {
+  background-color: #00ffff;
+  color: purple;
   width: 550px;
   padding: 16px;
-  font-size: 40px;
+  font-size: 30px;
   font-family: "Orbitron", sans-serif;
   cursor: pointer;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
@@ -112,21 +112,21 @@ p {
 
 #backbutton {
   background-color: #00ffff;
-  color: black;
+  color: purple;
 }
 
-a:hover,
 #playButton:hover,
 #backbutton:hover,
 #restartButton:hover,
+#beatbutton:hover,
 .knop1:hover {
   transform: translateY(-2px);
 }
 
-a:active,
 #playButton:active,
 #backbutton:active,
 #restartButton:active,
+#beatbutton:active,
 .knop1:active {
   transform: translateY(-1px);
 }
@@ -213,10 +213,10 @@ a:active,
 .knop1 {
   width: 750px;
   height: 100%;
-  padding: 12px;
+  padding: 16px;
   background-color: #00ffff;
   color: purple;
-  border: 4px solid #00ffff;
+  border: none;
   border-radius: 12px;
   cursor: pointer;
   font-size: 25px;
@@ -267,6 +267,12 @@ a {
 .notLaptop span {
   font-size: clamp(12px, 2.5vw, 30px);
   color: #00ffff;
+}
+
+@media (max-width: 900px) {
+  #beatMenu {
+    font-size: 30px;
+  }
 }
 
 @media (max-width: 768px) {
