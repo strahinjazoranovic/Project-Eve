@@ -705,20 +705,20 @@ const sounds = [
 ];
 
 // Player volume
-playerNoise.volume = 0.25;
-playerShoot.volume = 0.4;
-hitPlayer.volume = 0.2;
-healthup.volume = 0.75;
-defeated.volume = 0.6;
+playerNoise.volume = 0.2; // Player engine noise
+playerShoot.volume = 0.25; // Player shooting
+hitPlayer.volume = 0.125; // Hit from an player onto an invader
+healthup.volume = 0.5; // Player getting +1 hp
+defeated.volume = 0.5; // Player defeated status/player with 0hp
 
 // Invader volume
-invaderNoise.volume = 0.15;
-invaderShoot.volume = 0.25;
-hitInvader.volume = 0.4;
+invaderNoise.volume = 0.1; // Invader engine noise
+invaderShoot.volume = 0.125; // Invader shooting
+hitInvader.volume = 0.25; // Hit from an invader onto an player
 
 // Meteor volume
-hitMeteor.volume = 0.45;
-meteorIncoming.volume = 0.75;
+hitMeteor.volume = 0.45; // Hit from an player onto an meteor
+meteorIncoming.volume = 0.5; // Noise for the player when an meteor is inbound
 
 // Ask if the game is active and only then play the audio but always play defeated
 function playSound(sound) {
@@ -758,6 +758,15 @@ function gameOver() {
 
 // End the gameplay loop for an beaten game
 function gameBeaten() {
+  // Save score
+  highScore = score;
+  localStorage.setItem("highScore", highScore);
+
+  // Update all high score displays
+  highScoreEl.forEach((element) => {
+    element.innerHTML = highScore;
+  });
+
   setTimeout(() => {
     if (game.beaten === true) {
       beatMenu.style.display = "flex";
