@@ -634,7 +634,7 @@ let game = {
 };
 
 // Score needed to beat the game
-const beatGameScore = 16000;
+const beatGameScore = 160000;
 
 // Invader spawn interval using difficulty
 var invaderSpawnInterval = Math.floor(
