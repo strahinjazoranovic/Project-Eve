@@ -707,14 +707,14 @@ const sounds = [
 // Player volume
 playerNoise.volume = 0.2; // Player engine noise
 playerShoot.volume = 0.25; // Player shooting
-hitPlayer.volume = 0.125; // Hit from an player onto an invader
+hitPlayer.volume = 0.075; // Hit from an player onto an invader
 healthup.volume = 0.5; // Player getting +1 hp
 defeated.volume = 0.5; // Player defeated status/player with 0hp
 
 // Invader volume
 invaderNoise.volume = 0.1; // Invader engine noise
 invaderShoot.volume = 0.125; // Invader shooting
-hitInvader.volume = 0.25; // Hit from an invader onto an player
+hitInvader.volume = 0.5; // Hit from an invader onto an player
 
 // Meteor volume
 hitMeteor.volume = 0.45; // Hit from an player onto an meteor
